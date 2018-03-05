@@ -12,7 +12,7 @@ using std::pair;
  OBSOLETE
  Return the intensity of every pixel 0-255
 */
-unsigned char* GetPixelIntensities(string imagePath)
+/*unsigned char* GetPixelIntensities(string imagePath)
 {
 	// Read the image file
 	Mat image = imread(imagePath, IMREAD_GRAYSCALE);
@@ -30,20 +30,19 @@ unsigned char* GetPixelIntensities(string imagePath)
 			pixels[index++] = image.at<unsigned char>(i, j);
 
 	return pixels;
-}
+}*/
 
 /*
  Return a probability of spiking for every pixel
 */
-float* Utils::RateEncode(string imagePath)
+float* Utils::RateEncode(unsigned char* image)
 {
-	auto imagePixels = GetPixelIntensities(imagePath);
-	int pixelsNo = sizeof(imagePixels) / sizeof(*imagePixels);
-	float* probabilities = new float[pixelsNo];
+	//auto imagePixels = GetPixelIntensities(imagePath);
+	float* probabilities = new float[784];
 	
-	for (int i = 0; i < pixelsNo; ++i)
+	for (int i = 0; i < 784; ++i)
 	{
-		probabilities[i] = imagePixels[i] * (P_RANGE.second - P_RANGE.first) / 255 + P_RANGE.first;
+		probabilities[i] = image[i] * (P_RANGE.second - P_RANGE.first) / 255 + P_RANGE.first;
 	}
 	return probabilities;
 }

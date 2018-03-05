@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="MatrixOps.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="SNN.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

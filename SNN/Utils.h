@@ -9,7 +9,7 @@ class Utils
 {
 public:
 
-	static float* RateEncode(string imagePath);
+	static float* RateEncode(unsigned char* image);
 	static bool* GenerateSpikes(float probability);
 	static pair<unsigned char*, unsigned char>* GetTrainingData(int NumberOfImages);
 	static pair<unsigned char*, unsigned char>* GetTestData(int NumberOfImages);
