@@ -13,6 +13,6 @@ public:
 
 	Network();
 	~Network();
-	char Run();
+	char Run(unsigned char* image);
 	void Train();
 };

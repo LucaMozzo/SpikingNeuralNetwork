@@ -4,6 +4,9 @@
 
 using std::string;
 
+const short CLASSES = 10;
+const short NEURONS_IN = 784;
+
 const short T=6;
 const short TYI=4;
 const short TYO=2;

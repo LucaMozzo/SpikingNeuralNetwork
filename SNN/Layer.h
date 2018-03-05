@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <time.h>
+#include "MatrixOps.h"
 
 class InputLayer
 {
@@ -15,8 +16,9 @@ public:
 	InputLayer();
 	~InputLayer();
 	void AddTrain(bool* train);
-	double** ApplyAlphas();
-	void UpdateAlphas(double* errors);
+	void ResetTrains();
+	double* ApplyAlphas() const;
+	void UpdateAlphas(double** errors);
 };
 
 class OutputLayer
@@ -25,16 +27,17 @@ protected:
 
 	double** betas;
 	double* gammas;
-	double** potentials;
+	double** u;
 	bool** y;
 
 public:
 
 	OutputLayer();
 	~OutputLayer();
-	bool** ComputeOutput();
-	double** ComputeErrors();
-	char ComputeWinner();
+	void Reset();
+	void ComputeOutput(double** synapsesOut);
+	double** ComputeErrors() const;
+	char ComputeWinner() const;
 	void UpdateBetas(double* errors);
 	void UpdateGammas(double* errors);
 };
