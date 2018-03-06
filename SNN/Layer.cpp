@@ -43,10 +43,10 @@ vector<vector<double>> InputLayer::ApplyAlphas() const
 	return result;
 }
 
-void InputLayer::UpdateAlphas(double** errors)
+void InputLayer::UpdateAlphas(vector<vector<double>> errors)
 {
-	short j = 0; //index of trains, which increases once evry 10 i
-	for (short i = 0; i < 7840; ++i)
+	short j = 0; //index of trains, which increases once every 10 i
+	for (short i = 0; i < CLASSES*NEURONS_IN; ++i)
 	{
 		for (short t = 0; t < T; ++t)
 		{
@@ -80,12 +80,6 @@ void OutputLayer::Reset()
 {
 	u = vector<vector<double>>(CLASSES);
 	y = vector<vector<bool>>(CLASSES);
-}
-
-// Sigmoid function
-const double g(const double x)
-{
-	return 1 / (1 + exp(-x));
 }
 
 void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
@@ -135,6 +129,19 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 	}
 }
 
+vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
+{
+	vector<vector<double>> diffs = vector<vector<double>>(CLASSES);
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		vector<double> diff = vector<double>(T);
+		for (short i = 0; i < T; ++i)
+		{
+			diff[i] = (label == c ? 1 : 0) - g(u[c][i]);
+		}
+		diffs[c] = diff;
+	}
+}
 
 char OutputLayer::ComputeWinner() const
 {
@@ -155,4 +162,26 @@ char OutputLayer::ComputeWinner() const
 	}
 
 	return bestIndex;
+}
+
+void OutputLayer::UpdateBetas(vector<vector<double>> errors)
+{
+	short j = 0; //index of 
+	for (short i = 0; i < CLASSES; ++i)
+	{
+		for (short t = 0; t < T; ++t)
+		{
+			betas[i][t] += LEARNING_RATE * (errors[i][j] * y[i][j]);
+		}
+		if (++j == 10)
+			j = 0;
+	}
+}
+
+void OutputLayer::UpdateGammas(vector<vector<double>> errors)
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		gammas[c] = LEARNING_RATE * MatrixOps::Sum(errors[c]);
+	}
 }

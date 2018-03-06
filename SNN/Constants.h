@@ -18,3 +18,9 @@ const string TRAIN_IMAGES_PATH = "D:\\train-images.idx3-ubyte";
 const string TRAIN_LABELS_PATH = "D:\\train-labels.idx1-ubyte";
 const string TEST_IMAGES_PATH = "D:\\t10k-images.idx3-ubyte";
 const string TEST_LABELS_PATH = "D:\\t10k-labels.idx1-ubyte";
+
+// Sigmoid function
+static const double g(const double x)
+{
+	return 1 / (1 + exp(-x));
+}

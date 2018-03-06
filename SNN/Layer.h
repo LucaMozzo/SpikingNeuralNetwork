@@ -19,7 +19,7 @@ public:
 	void AddTrain(vector<bool>& train);
 	void ResetTrains();
 	vector<vector<double>> ApplyAlphas() const;
-	void UpdateAlphas(double** errors);
+	void UpdateAlphas(vector<vector<double>> errors);
 };
 
 class OutputLayer
@@ -36,8 +36,8 @@ public:
 	OutputLayer();
 	void Reset();
 	void ComputeOutput(vector<vector<double>>& synapsesOut);
-	//double** ComputeErrors() const;
+	vector<vector<double>> ComputeErrors(unsigned char label) const;
 	char ComputeWinner() const;
-	//void UpdateBetas(double* errors);
-	//void UpdateGammas(double* errors);
+	void UpdateBetas(vector<vector<double>> errors);
+	void UpdateGammas(vector<vector<double>> errors);
 };
