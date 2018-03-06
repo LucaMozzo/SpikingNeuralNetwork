@@ -1,43 +1,38 @@
 #include "stdafx.h"
 #include "Layer.h"
-#include "MatrixOps.h"
 
 InputLayer::InputLayer()
 {
-	trains = new bool*[784];
-	alphas = new double*[7840];
+	trains = vector<vector<bool>>(NEURONS_IN);
+	alphas = vector<vector<double>>(NEURONS_IN*CLASSES);
 
 	srand(time(NULL));
 
 	//generate alphas randomly
 	for (int i = 0; i < 7840; ++i)
 	{
-		alphas[i] = new double[TYI];
+		alphas[i] = vector<double>(TYI);
 
 		for (int j = 0; j < TYI; ++j)
 			alphas[i][j] = (rand() % 10 + 1) / 50.0; //0.02 to 0.2
 	}
 }
 
-void InputLayer::AddTrain(bool * train)
+void InputLayer::AddTrain(vector<bool>& train)
 {
 	trains[index++] = train;
 }
 
 void InputLayer::ResetTrains()
 {
-	for (int i = 0; i < 784; ++i)
-		delete trains[i];
-
-	delete trains;
-
-	trains = new bool*[784];
+	index = 0;
+	trains = vector<vector<bool>>(NEURONS_IN);
 }
 
-double* InputLayer::ApplyAlphas() const
+vector<vector<double>> InputLayer::ApplyAlphas() const
 {
-	double** result = new double*[CLASSES*NEURONS_IN];
-	short j = 0; //index of trains, which increases once evry 10 i
+	vector<vector<double>> result = vector<vector<double>>(CLASSES*NEURONS_IN);
+	short j = 0; //index of trains, which increases once every 10 i
 	for (short i = 0; i < CLASSES*NEURONS_IN; ++i)
 	{
 		result[i] = MatrixOps::Conv(trains[j], alphas[i]);
@@ -45,10 +40,8 @@ double* InputLayer::ApplyAlphas() const
 			j = 0;
 	}
 
-	return MatrixOps::SumColumns(result);
+	return result;
 }
-
-
 
 void InputLayer::UpdateAlphas(double** errors)
 {
@@ -64,69 +57,84 @@ void InputLayer::UpdateAlphas(double** errors)
 	}
 }
 
-InputLayer::~InputLayer()
-{
-	for (int i = 0; i < 784; ++i)
-		delete trains[i];
-
-	for (int i = 0; i < 7840; ++i)
-		delete alphas[i];
-
-	delete trains;
-	delete alphas;
-}
-
 OutputLayer::OutputLayer()
 {
-	betas = new double*[10];
-	u = new double*[10];
-	y = new bool*[10];
-	gammas = new double[10];
+	betas = vector<vector<double>>(CLASSES);
+	u = vector<vector<double>>(CLASSES);
+	y = vector<vector<bool>>(CLASSES);
+	gammas = vector<double>(CLASSES);
 
 	srand(time(NULL));
 
 	//generate betas randomly
 	for (int i = 0; i < 10; ++i)
 	{
-		betas[i] = new double[TYO];
+		betas[i] = vector<double>(TYO);
 
 		for (int j = 0; j < TYO; ++j)
 			betas[i][j] = (rand() % 10 + 1) / 50.0; //0.02 to 0.2
 	}
 }
 
-OutputLayer::~OutputLayer()
-{
-	for (short i = 0; i < 10; ++i) {
-		delete betas[i];
-		//delete u[i];
-		//delete y[i]; TODO rollback
-	}
-
-	delete betas;
-	delete gammas;
-	delete u;
-	delete y;
-}
-
 void OutputLayer::Reset()
 {
-	/*for (short i = 0; i < CLASSES; ++i) {
-		delete u[i];
-		delete y[i]; TODO rollback
-	}*/
-
-	delete u;
-	delete y;
-
-	u = new double*[CLASSES];
-	y = new bool*[CLASSES];
+	u = vector<vector<double>>(CLASSES);
+	y = vector<vector<bool>>(CLASSES);
 }
 
-void OutputLayer::ComputeOutput(double ** synapsesOut)
+// Sigmoid function
+const double g(const double x)
 {
-	
+	return 1 / (1 + exp(-x));
 }
+
+void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		u[c] = vector<double>(T);
+		y[c] = vector<bool>(T);
+
+		/*
+		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
+
+		therefore the alphas relevant to each output neuron are at rows % 10 where the reminder is the class
+		e.g.
+		row 0 -> input neuron 0 to class 0
+		row 1 -> input neuron 0 to class 1
+		...
+		*/
+
+		auto alphas = MatrixOps::SumColumnsMod(synapsesOut, c);
+
+		u[c][0] = gammas[c]; //the first potential will always be just the bias
+
+		for (short t = 1; t < T; ++t)
+		{
+			vector<double> beta = vector<double>(TYO);
+			for (short b = t - TYO; b < 0; ++b)
+			{
+				if (b >= 0)
+					beta[t - 1] = (y[c][t] * betas[c][b]);
+				else
+					beta[t - 1] = 0;
+			}
+
+			// sum together alpha, beta, gamma => potential
+			u[c][t] = MatrixOps::Sum(beta) + gammas[c] + alphas[t];
+			double probability = g(u[c][t]);
+
+			srand(time(NULL));
+			probability = probability * 10000;
+
+			if (rand() % 10000 <= probability)
+				y[c][t] = 1;
+			else
+				y[c][t] = 0;
+		}
+	}
+}
+
 
 char OutputLayer::ComputeWinner() const
 {

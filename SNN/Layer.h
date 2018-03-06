@@ -3,21 +3,22 @@
 #include <time.h>
 #include "MatrixOps.h"
 
+using std::vector;
+
 class InputLayer
 {
 protected:
 
-	bool** trains;
-	double** alphas;
+	vector<vector<bool>> trains;
+	vector<vector<double>> alphas;
 	short index = 0;
 
 public:
 
 	InputLayer();
-	~InputLayer();
-	void AddTrain(bool* train);
+	void AddTrain(vector<bool>& train);
 	void ResetTrains();
-	double* ApplyAlphas() const;
+	vector<vector<double>> ApplyAlphas() const;
 	void UpdateAlphas(double** errors);
 };
 
@@ -25,19 +26,18 @@ class OutputLayer
 {
 protected:
 
-	double** betas;
-	double* gammas;
-	double** u;
-	bool** y;
+	vector<vector<double>> betas;
+	vector<double> gammas;
+	vector<vector<double>> u;
+	vector<vector<bool>> y;
 
 public:
 
 	OutputLayer();
-	~OutputLayer();
 	void Reset();
-	void ComputeOutput(double** synapsesOut);
-	double** ComputeErrors() const;
+	void ComputeOutput(vector<vector<double>>& synapsesOut);
+	//double** ComputeErrors() const;
 	char ComputeWinner() const;
-	void UpdateBetas(double* errors);
-	void UpdateGammas(double* errors);
+	//void UpdateBetas(double* errors);
+	//void UpdateGammas(double* errors);
 };

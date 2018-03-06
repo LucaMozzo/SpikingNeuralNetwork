@@ -6,13 +6,12 @@
 class Network {
 protected:
 
-	InputLayer* inputLayer;
-	OutputLayer* outputLayer;
+	InputLayer inputLayer;
+	OutputLayer outputLayer;
 
 public:
 
 	Network();
-	~Network();
-	char Run(unsigned char* image);
+	char Run(vector<unsigned char> image);
 	void Train();
 };

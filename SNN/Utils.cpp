@@ -35,10 +35,10 @@ using std::pair;
 /*
  Return a probability of spiking for every pixel
 */
-float* Utils::RateEncode(unsigned char* image)
+vector<float> Utils::RateEncode(vector<unsigned char>& image)
 {
 	//auto imagePixels = GetPixelIntensities(imagePath);
-	float* probabilities = new float[784];
+	vector<float> probabilities = vector<float>(784);
 	
 	for (int i = 0; i < 784; ++i)
 	{
@@ -50,9 +50,9 @@ float* Utils::RateEncode(unsigned char* image)
 /*
  Return a vector of size T that contains the train of spikes based on probability
 */
-bool* Utils::GenerateSpikes(float probability)
+vector<bool> Utils::GenerateSpikes(float probability)
 {
-	bool* train = new bool[T];
+	vector<bool> train = vector<bool>(T);
 
 	//random seed
 	srand(time(NULL));
@@ -81,9 +81,9 @@ int ReverseInt(int i)
 /*
  Read the images/labels from the MNIST database
 */
-pair<unsigned char*, unsigned char>* ReadMNIST(int NumberOfImages, string imagesPath, string labelsPath)
+vector<pair<vector<unsigned char>, unsigned char>> ReadMNIST(int NumberOfImages, string imagesPath, string labelsPath)
 {
-	pair<unsigned char*, unsigned char>* arr = new pair<unsigned char*, unsigned char>[NumberOfImages];
+	vector<pair<vector<unsigned char>, unsigned char>> arr = vector<pair<vector<unsigned char>, unsigned char>>(NumberOfImages);
 
 	std::ifstream images_file(imagesPath, std::ios::binary);
 	std::ifstream labels_file(labelsPath, std::ios::binary);
@@ -112,7 +112,7 @@ pair<unsigned char*, unsigned char>* ReadMNIST(int NumberOfImages, string images
 		//generate the array
 		for (int i = 0; i<NumberOfImages; ++i)
 		{
-			arr[i].first = new unsigned char[n_rows*n_cols];
+			arr[i].first = vector<unsigned char>(n_rows*n_cols);
 
 			unsigned char temp = 0;
 			labels_file.read((char*)&temp, sizeof(temp));
@@ -129,14 +129,13 @@ pair<unsigned char*, unsigned char>* ReadMNIST(int NumberOfImages, string images
 		}
 		return arr;
 	}
-	return nullptr;
 }
 
 
 /*
  Return the training data
 */
-pair<unsigned char*, unsigned char>* Utils::GetTrainingData(int NumberOfImages)
+vector<pair<vector<unsigned char>, unsigned char>> Utils::GetTrainingData(int NumberOfImages)
 {
 	auto data = ReadMNIST(NumberOfImages, TRAIN_IMAGES_PATH, TRAIN_LABELS_PATH);
 
@@ -145,7 +144,7 @@ pair<unsigned char*, unsigned char>* Utils::GetTrainingData(int NumberOfImages)
 	//shuffle the array using Fisher–Yates algorithm
 	int i = NumberOfImages - 1;
 	int j;
-	pair<unsigned char*, unsigned char> temp;
+	pair<vector<unsigned char>, unsigned char> temp;
 	while (i > 0)
 	{
 		j = floor(((rand() % 10)/10.0) * (i + 1));
@@ -161,7 +160,7 @@ pair<unsigned char*, unsigned char>* Utils::GetTrainingData(int NumberOfImages)
 /*
 Return the test data
 */
-pair<unsigned char*, unsigned char>* Utils::GetTestData(int NumberOfImages)
+vector<pair<vector<unsigned char>, unsigned char>> Utils::GetTestData(int NumberOfImages)
 {
 	return ReadMNIST(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH);
 }

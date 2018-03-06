@@ -63,7 +63,7 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Network.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

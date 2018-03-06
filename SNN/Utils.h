@@ -9,8 +9,8 @@ class Utils
 {
 public:
 
-	static float* RateEncode(unsigned char* image);
-	static bool* GenerateSpikes(float probability);
-	static pair<unsigned char*, unsigned char>* GetTrainingData(int NumberOfImages);
-	static pair<unsigned char*, unsigned char>* GetTestData(int NumberOfImages);
+	static vector<float> RateEncode(vector<unsigned char>& image);
+	static vector<bool> GenerateSpikes(float probability);
+	static vector<pair<vector<unsigned char>, unsigned char>> GetTrainingData(int NumberOfImages);
+	static vector<pair<vector<unsigned char>, unsigned char>> GetTestData(int NumberOfImages);
 };

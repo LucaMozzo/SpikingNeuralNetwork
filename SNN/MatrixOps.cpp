@@ -18,6 +18,23 @@ double* MatrixOps::Conv(const bool * f, const double * g)
 	return out;
 }
 
+vector<double> MatrixOps::Conv(vector<bool> const & f, vector<double> const & g)
+{
+	int const nf = f.size();
+	int const ng = g.size();
+	int const n = nf + ng - 1;
+	int const out_size = nf - 1;
+	vector<double> out(out_size, 0);
+	for (auto i(0); i < out_size; ++i) {
+		int const jmn = (i >= ng - 1) ? i - (ng - 1) : 0;
+		int const jmx = (i <  out_size) ? i : out_size;
+		for (auto j(jmn); j <= jmx; ++j) {
+			out[i] += (f[j] * g[i - j]);
+		}
+	}
+	return out;
+}
+
 double* MatrixOps::Multiply(const bool * f, const double * g, const short len)
 {
 	double* res = new double[len];
@@ -27,7 +44,7 @@ double* MatrixOps::Multiply(const bool * f, const double * g, const short len)
 	return res;
 }
 
-double* MatrixOps::SumColumns(const double** vect, const short rows=CLASSES* NEURONS_IN, const short columns=T)
+double* MatrixOps::SumColumns(const double** vect, const short rows, const short columns)
 {
 	double* tot = new double[columns];
 
@@ -42,3 +59,41 @@ double* MatrixOps::SumColumns(const double** vect, const short rows=CLASSES* NEU
 
 	return tot;
 }
+
+/*
+ Sum the columns where the row's reminder is relevant
+*/
+vector<double> MatrixOps::SumColumnsMod(vector<vector<double>>& vect, const short cl)
+{
+	vector<double> tot = vector<double>(vect[0].size());
+
+	for (int i = 0; i < vect[0].size(); ++i)
+	{
+		tot[i] = 0;
+		for (int j = cl; j < vect.size(); j+=CLASSES)
+		{
+			tot[i] += vect[j][i];
+		}	}
+
+	return tot;
+}
+
+ double MatrixOps::Sum(const double * vect, const short size)
+ {
+	 double tot = 0;
+
+	 for (int i = 0; i < size; ++i)
+		 tot += vect[i];
+
+	 return tot;
+ }
+
+ double MatrixOps::Sum(const vector<double>& vect)
+ {
+	 double tot = 0;
+
+	 for (int i = 0; i < vect.size(); ++i)
+		 tot += vect[i];
+
+	 return tot;
+ }
