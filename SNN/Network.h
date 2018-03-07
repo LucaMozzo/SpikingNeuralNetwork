@@ -13,5 +13,5 @@ public:
 
 	Network();
 	char Run(vector<unsigned char> image);
-	void Train();
+	void Train(short epochs, int trainingImages = 60000);
 };

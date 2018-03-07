@@ -14,7 +14,7 @@ InputLayer::InputLayer()
 		alphas[i] = vector<double>(TYI);
 
 		for (int j = 0; j < TYI; ++j)
-			alphas[i][j] = (rand() % 10 + 1) / 50.0; //0.02 to 0.2
+			alphas[i][j] = (rand() % 10 + 1) / 10.0;
 	}
 }
 
@@ -31,13 +31,13 @@ void InputLayer::ResetTrains()
 
 vector<vector<double>> InputLayer::ApplyAlphas() const
 {
+	short j = 0; //index for the train
 	vector<vector<double>> result = vector<vector<double>>(CLASSES*NEURONS_IN);
-	short j = 0; //index of trains, which increases once every 10 i
-	for (short i = 0; i < CLASSES*NEURONS_IN; ++i)
+	for (short c = 0; c < NEURONS_IN*CLASSES; ++c)
 	{
-		result[i] = MatrixOps::Conv(trains[j], alphas[i]);
-		if (++j == CLASSES)
-			j = 0;
+		if (c % 10 == 0 && c > 0)
+			++j;
+		result[c] = MatrixOps::Conv(trains[j], alphas[c]);
 	}
 
 	return result;
@@ -45,15 +45,24 @@ vector<vector<double>> InputLayer::ApplyAlphas() const
 
 void InputLayer::UpdateAlphas(vector<vector<double>> errors)
 {
-	short j = 0; //index of trains, which increases once every 10 i
-	for (short i = 0; i < CLASSES*NEURONS_IN; ++i)
+	short j = 0; //index for the train
+	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
 	{
+		if (c % 10 == 0 && c > 0)
+			++j;
+
+		//compute error
+		double tot = 0;
 		for (short t = 0; t < T; ++t)
-		{
-			alphas[i][t] += LEARNING_RATE * (errors[i][j] * trains[i][j]);
-		}
-		if (++j == 10)
-			j = 0;
+			tot += errors[c%10][t] * trains[j][t];
+		tot *= LEARNING_RATE;
+
+		//apply it to every member of alpha
+		if(tot > 0)
+			for (short t = 0; t < TYI; ++t)
+			{
+				alphas[c][t] += tot;
+			}
 	}
 }
 
@@ -66,13 +75,14 @@ OutputLayer::OutputLayer()
 
 	srand(time(NULL));
 
-	//generate betas randomly
+	//generate betas and gammas randomly
 	for (int i = 0; i < 10; ++i)
 	{
 		betas[i] = vector<double>(TYO);
 
 		for (int j = 0; j < TYO; ++j)
-			betas[i][j] = (rand() % 10 + 1) / 50.0; //0.02 to 0.2
+			betas[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
+		gammas[i] = (rand() % 10 + 1) / 10.0;;
 	}
 }
 
@@ -86,6 +96,7 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
+		srand(time(NULL));
 		u[c] = vector<double>(T);
 		y[c] = vector<bool>(T);
 
@@ -102,23 +113,32 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 		auto alphas = MatrixOps::SumColumnsMod(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
+		//compute spiking
+		double probability = g(u[c][0]);
+		probability = probability * 10000;
+
+		if (rand() % 10000 <= probability)
+			y[c][0] = 1;
+		else
+			y[c][0] = 0;
 
 		for (short t = 1; t < T; ++t)
 		{
 			vector<double> beta = vector<double>(TYO);
-			for (short b = t - TYO; b < 0; ++b)
+			short yIndex = t - TYO;
+			for (short b = 0; b < 2; ++b)
 			{
-				if (b >= 0)
-					beta[t - 1] = (y[c][t] * betas[c][b]);
+				if (yIndex >= 0)
+					beta[b] = y[c][yIndex++] * betas[c][b];
 				else
-					beta[t - 1] = 0;
+					beta[b] = 0;
 			}
 
 			// sum together alpha, beta, gamma => potential
-			u[c][t] = MatrixOps::Sum(beta) + gammas[c] + alphas[t];
-			double probability = g(u[c][t]);
+			u[c][t] = MatrixOps::Sum(beta) + gammas[c] + alphas[t-1];
 
-			srand(time(NULL));
+			//compute spiking
+			double probability = g(u[c][t]);
 			probability = probability * 10000;
 
 			if (rand() % 10000 <= probability)
@@ -131,16 +151,20 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 
 vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
 {
+	double tot = 0;
 	vector<vector<double>> diffs = vector<vector<double>>(CLASSES);
 	for (short c = 0; c < CLASSES; ++c)
 	{
 		vector<double> diff = vector<double>(T);
-		for (short i = 0; i < T; ++i)
+		for (short t = 0; t < T; ++t)
 		{
-			diff[i] = (label == c ? 1 : 0) - g(u[c][i]);
+			diff[t] = (label == c ? 1 : 0) - g(u[c][t]);
+			tot += diff[t];
 		}
 		diffs[c] = diff;
 	}
+	std::cout << tot << std::endl;
+	return diffs;
 }
 
 char OutputLayer::ComputeWinner() const
@@ -166,15 +190,20 @@ char OutputLayer::ComputeWinner() const
 
 void OutputLayer::UpdateBetas(vector<vector<double>> errors)
 {
-	short j = 0; //index of 
-	for (short i = 0; i < CLASSES; ++i)
+	for (short c = 0; c < CLASSES; ++c)
 	{
+		//compute error
+		double tot = 0;
 		for (short t = 0; t < T; ++t)
+			tot += errors[c][t] * y[c][t];
+
+		tot *= LEARNING_RATE;
+
+		//apply it
+		for (short t = 0; t < TYO; ++t)
 		{
-			betas[i][t] += LEARNING_RATE * (errors[i][j] * y[i][j]);
+			betas[c][t] += tot;
 		}
-		if (++j == 10)
-			j = 0;
 	}
 }
 
