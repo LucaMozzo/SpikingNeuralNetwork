@@ -10,10 +10,11 @@ class InputLayer
 protected:
 
 	vector<vector<bool>> trains;
-	vector<vector<double>> alphas;
 	short index = 0;
 
 public:
+
+	vector<vector<double>> alphas;
 
 	InputLayer();
 	void AddTrain(vector<bool>& train);
@@ -26,12 +27,13 @@ class OutputLayer
 {
 protected:
 
-	vector<vector<double>> betas;
-	vector<double> gammas;
 	vector<vector<double>> u;
 	vector<vector<bool>> y;
 
 public:
+
+	vector<vector<double>> betas;
+	vector<double> gammas;
 
 	OutputLayer();
 	void Reset();

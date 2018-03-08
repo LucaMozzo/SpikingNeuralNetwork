@@ -7,10 +7,10 @@ using std::string;
 const short CLASSES = 10;
 const short NEURONS_IN = 784;
 
-const short T=6;
-const short TYI=4;
-const short TYO=2;
-const float LEARNING_RATE = 0.005;
+const short T = 6;
+const short TYI = 4;
+const short TYO = 2;
+const float LEARNING_RATE = 0.05;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths

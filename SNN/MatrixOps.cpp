@@ -73,7 +73,8 @@ vector<double> MatrixOps::SumColumnsMod(vector<vector<double>>& vect, const shor
 		for (int j = cl; j < vect.size(); j+=CLASSES)
 		{
 			tot[i] += vect[j][i];
-		}	}
+		}	
+	}
 
 	return tot;
 }

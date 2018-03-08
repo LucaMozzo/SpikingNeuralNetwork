@@ -14,4 +14,5 @@ public:
 	Network();
 	char Run(vector<unsigned char> image);
 	void Train(short epochs, int trainingImages = 60000);
+	void Network::ImportData();
 };

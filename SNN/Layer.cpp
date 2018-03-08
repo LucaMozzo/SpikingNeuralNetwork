@@ -35,7 +35,7 @@ vector<vector<double>> InputLayer::ApplyAlphas() const
 	vector<vector<double>> result = vector<vector<double>>(CLASSES*NEURONS_IN);
 	for (short c = 0; c < NEURONS_IN*CLASSES; ++c)
 	{
-		if (c % 10 == 0 && c > 0)
+		if (c % CLASSES == 0 && c > 0)
 			++j;
 		result[c] = MatrixOps::Conv(trains[j], alphas[c]);
 	}
@@ -48,7 +48,7 @@ void InputLayer::UpdateAlphas(vector<vector<double>> errors)
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
 	{
-		if (c % 10 == 0 && c > 0)
+		if (c % CLASSES == 0 && c > 0)
 			++j;
 
 		//compute error
@@ -128,8 +128,8 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 			short yIndex = t - TYO;
 			for (short b = 0; b < 2; ++b)
 			{
-				if (yIndex >= 0)
-					beta[b] = y[c][yIndex++] * betas[c][b];
+				if (yIndex++ >= 0)
+					beta[b] = y[c][yIndex-1] * betas[c][b];
 				else
 					beta[b] = 0;
 			}
@@ -162,8 +162,10 @@ vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
 			tot += diff[t];
 		}
 		diffs[c] = diff;
+		/*std::cout << tot << std::endl;
+		tot = 0;*/
 	}
-	std::cout << tot << std::endl;
+	
 	return diffs;
 }
 
@@ -172,7 +174,7 @@ char OutputLayer::ComputeWinner() const
 	char bestIndex = 0;
 	char bestSpikes = 0;
 
-	for (short i = 0; i < 10; ++i) 
+	for (short i = 0; i < CLASSES; ++i) 
 	{
 		char currentSpikes = 0;
 		for (short t = 0; t < T; ++t)
@@ -211,6 +213,6 @@ void OutputLayer::UpdateGammas(vector<vector<double>> errors)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
-		gammas[c] = LEARNING_RATE * MatrixOps::Sum(errors[c]);
+		gammas[c] += LEARNING_RATE * MatrixOps::Sum(errors[c]);
 	}
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Network.h"
+#include "DatabaseOps.h"
 
 Network::Network()
 {
@@ -28,7 +29,6 @@ char Network::Run(vector<unsigned char> image)
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();
-	return 0;
 }
 
 void Network::Train(short epochs, int trainingImages)
@@ -46,4 +46,9 @@ void Network::Train(short epochs, int trainingImages)
 			outputLayer.UpdateGammas(errors);
 		}
 	}
+}
+
+void Network::ImportData()
+{
+	DatabaseOps::ImportData(&inputLayer, &outputLayer);
 }

@@ -9,30 +9,6 @@ using namespace cv;
 using std::pair;
 
 /*
- OBSOLETE
- Return the intensity of every pixel 0-255
-*/
-/*unsigned char* GetPixelIntensities(string imagePath)
-{
-	// Read the image file
-	Mat image = imread(imagePath, IMREAD_GRAYSCALE);
-
-	if (image.empty()) // Check for failure
-	{
-		throw new Exception();
-	}
-
-	unsigned char* pixels = new unsigned char[image.rows*image.cols];
-
-	int index = 0;
-	for(int i = 0; i < image.rows; ++i)
-		for (int j = 0; j < image.cols; ++j)
-			pixels[index++] = image.at<unsigned char>(i, j);
-
-	return pixels;
-}*/
-
-/*
  Return a probability of spiking for every pixel
 */
 vector<float> Utils::RateEncode(vector<unsigned char>& image)
