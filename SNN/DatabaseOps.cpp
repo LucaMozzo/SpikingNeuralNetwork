@@ -41,6 +41,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer)
 			{
 				alpha[j] = atof(results[i]);
 			}
+			i -= columns;
 			inputLayer->alphas[c++] = alpha;
 		}
 	}

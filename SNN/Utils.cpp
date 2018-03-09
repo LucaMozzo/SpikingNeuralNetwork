@@ -31,12 +31,12 @@ vector<bool> Utils::GenerateSpikes(float probability)
 	vector<bool> train = vector<bool>(T);
 
 	//random seed
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	probability = probability * 10000;
 
 	for (int i = 0; i < T; ++i)
-		if (rand() % 10000 <= probability)
+		if (/*rand() % 10000*/Random::random() * 1000 <= probability)
 			train[i] = 1;
 		else
 			train[i] = 0;
@@ -115,7 +115,7 @@ vector<pair<vector<unsigned char>, unsigned char>> Utils::GetTrainingData(int Nu
 {
 	auto data = ReadMNIST(NumberOfImages, TRAIN_IMAGES_PATH, TRAIN_LABELS_PATH);
 
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	//shuffle the array using Fisher–Yates algorithm
 	int i = NumberOfImages - 1;

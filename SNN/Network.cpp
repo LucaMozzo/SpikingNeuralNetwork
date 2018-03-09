@@ -35,13 +35,14 @@ void Network::Train(short epochs, int trainingImages)
 {
 	for (short epoch = 0; epoch < epochs; ++epoch)
 	{
-		auto data = Utils::GetTrainingData(trainingImages);
+		auto data = Utils::GetTestData(trainingImages);
 
 		for (int i = 0; i < trainingImages; ++i)
 		{
 			char result = Run(data[i].first);
 			auto errors = outputLayer.ComputeErrors(data[i].second);
 			inputLayer.UpdateAlphas(errors);
+
 			outputLayer.UpdateBetas(errors);
 			outputLayer.UpdateGammas(errors);
 		}

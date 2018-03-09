@@ -20,7 +20,7 @@ public:
 	void AddTrain(vector<bool>& train);
 	void ResetTrains();
 	vector<vector<double>> ApplyAlphas() const;
-	void UpdateAlphas(vector<vector<double>> errors);
+	void UpdateAlphas(vector<vector<double>>& errors);
 };
 
 class OutputLayer

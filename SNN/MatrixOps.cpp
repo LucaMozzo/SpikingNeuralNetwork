@@ -44,14 +44,14 @@ double* MatrixOps::Multiply(const bool * f, const double * g, const short len)
 	return res;
 }
 
-double* MatrixOps::SumColumns(const double** vect, const short rows, const short columns)
+vector<double> MatrixOps::SumColumns(vector<vector<double>>& vect)
 {
-	double* tot = new double[columns];
+	vector<double> tot = vector<double>(vect[0].size());
 
-	for (int i = 0; i < columns; ++i)
+	for (int i = 0; i < vect[0].size(); ++i)
 	{
 		tot[i] = 0;
-		for (int j = 0; j < rows; ++j)
+		for (int j = 0; j < vect.size(); ++j)
 		{
 			tot[i] += vect[j][i];
 		}
