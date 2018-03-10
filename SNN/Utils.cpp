@@ -31,7 +31,6 @@ vector<bool> Utils::GenerateSpikes(float probability)
 	vector<bool> train = vector<bool>(T);
 
 	//random seed
-	//srand(time(NULL));
 
 	probability = probability * 10000;
 

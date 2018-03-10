@@ -20,13 +20,10 @@ double* MatrixOps::Conv(const bool * f, const double * g)
 
 vector<double> MatrixOps::Conv(vector<bool> const & f, vector<double> const & g)
 {
-	int const nf = f.size();
-	int const ng = g.size();
-	int const n = nf + ng - 1;
-	int const out_size = nf - 1;
+	int const out_size = T - 1;
 	vector<double> out(out_size, 0);
 	for (auto i(0); i < out_size; ++i) {
-		int const jmn = (i >= ng - 1) ? i - (ng - 1) : 0;
+		int const jmn = (i >= TYI - 1) ? i - (TYI - 1) : 0;
 		int const jmx = (i <  out_size) ? i : out_size;
 		for (auto j(jmn); j <= jmx; ++j) {
 			out[i] += (f[j] * g[i - j]);

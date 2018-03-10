@@ -7,7 +7,7 @@ InputLayer::InputLayer()
 	alphas = vector<vector<double>>(NEURONS_IN*CLASSES);
 
 	//generate alphas randomly
-	for (int i = 0; i < 7840; ++i)
+	for (int i = 0; i < CLASSES*NEURONS_IN; ++i)
 	{
 		alphas[i] = vector<double>(TYI);
 
