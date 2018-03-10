@@ -2,8 +2,11 @@
 #include "Network.h"
 #include "DatabaseOps.h"
 
+using std::string;
+
 Network::Network()
 {
+	srand(time(NULL));
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
 }
@@ -35,7 +38,7 @@ void Network::Train(short epochs, int trainingImages)
 {
 	for (short epoch = 0; epoch < epochs; ++epoch)
 	{
-		auto data = Utils::GetTestData(trainingImages);
+		auto data = Utils::GetTrainingData(trainingImages);
 
 		for (int i = 0; i < trainingImages; ++i)
 		{
@@ -49,7 +52,12 @@ void Network::Train(short epochs, int trainingImages)
 	}
 }
 
-void Network::ImportData()
+void Network::ImportData(string fileName)
 {
-	DatabaseOps::ImportData(&inputLayer, &outputLayer);
+	DatabaseOps::ImportData(&inputLayer, &outputLayer, fileName);
+}
+
+void Network::ExportData(string fileName)
+{
+	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
 }

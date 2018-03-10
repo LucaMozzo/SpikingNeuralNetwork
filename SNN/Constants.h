@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include <cmath>
 #include <fstream>
-#include "Random.h"
 
 using std::string;
 using std::vector;
@@ -13,7 +12,7 @@ const short NEURONS_IN = 784;
 const short T = 6;
 const short TYI = 4;
 const short TYO = 2;
-const float LEARNING_RATE = 0.005;
+const float LEARNING_RATE = 0.5;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths

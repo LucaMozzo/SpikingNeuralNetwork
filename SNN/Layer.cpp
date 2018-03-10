@@ -6,8 +6,6 @@ InputLayer::InputLayer()
 	trains = vector<vector<bool>>(NEURONS_IN);
 	alphas = vector<vector<double>>(NEURONS_IN*CLASSES);
 
-	//srand(time(NULL));
-
 	//generate alphas randomly
 	for (int i = 0; i < 7840; ++i)
 	{
@@ -39,36 +37,11 @@ vector<vector<double>> InputLayer::ApplyAlphas() const
 			++j;
 		result[c] = MatrixOps::Conv(trains[j], alphas[c]);
 	}
-	/*for (short c = 0; c < CLASSES; ++c)
-	{
-		for (short i = 0; i < NEURONS_IN; ++i)
-		{
-			result[c*NEURONS_IN + i] = MatrixOps::Conv(trains[i], alphas[c*NEURONS_IN + i]);
-		}
-	}*/
 	return result;
 }
 
 void InputLayer::UpdateAlphas(vector<vector<double>>& errors)
 {
-	/*for (short c = 0; c < CLASSES; ++c)
-	{
-		for (short i = 0; i < NEURONS_IN; ++i)
-		{
-			//compute error
-			double tot = 0;
-			for (short t = 0; t < T; ++t)
-				tot += errors[c][t] * trains[i][t];
-			tot *= LEARNING_RATE;
-
-			//apply it to every member of alpha
-			//if (tot > 0)
-				for (short t = 0; t < TYI; ++t)
-				{
-					alphas[c*NEURONS_IN+i][t] += tot;
-				}
-		}
-	}*/
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
 	{
@@ -140,8 +113,7 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 		double probability = g(u[c][0]);
 		probability = probability * 10000;
 
-		int rnd = Random::random();
-		if (/*rand() % 10000*/rnd*1000 <= probability)
+		if (rand() % 10000 <= probability)
 			y[c][0] = 1;
 		else
 			y[c][0] = 0;
@@ -165,7 +137,7 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 			double probability = g(u[c][t]);
 			probability = probability * 10000;
 
-			if (/*rand() % 10000*/Random::random() * 1000 <= probability)
+			if (rand() % 10000 <= probability)
 				y[c][t] = 1;
 			else
 				y[c][t] = 0;
@@ -175,7 +147,6 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 
 vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
 {
-	double tot = 0;
 	vector<vector<double>> diffs = vector<vector<double>>(CLASSES);
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -183,11 +154,9 @@ vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
 		for (short t = 0; t < T; ++t)
 		{
 			diff[t] = (label == c ? 1 : 0) - g(u[c][t]);
-			//tot += diff[t];
 		}
 		diffs[c] = diff;
 	}
-	//std::cout << "Err " << tot << std::endl;
 	return diffs;
 }
 

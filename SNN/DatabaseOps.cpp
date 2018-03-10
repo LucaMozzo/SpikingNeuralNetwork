@@ -1,10 +1,20 @@
 #include "stdafx.h"
 #include "DatabaseOps.h"
 
-void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer)
+void DatabaseOps::ExportData(InputLayer * inputLayer, OutputLayer * outputLayer, string fileName)
 {
 	sqlite3* db;
-	auto rc = sqlite3_open("D:\\data.db", &db);
+	auto rc = sqlite3_open(fileName.c_str(), &db);
+	if (rc)
+		return; //failed to connect
+
+	sqlite3_close(db);
+}
+
+void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, string fileName)
+{
+	sqlite3* db;
+	auto rc = sqlite3_open(fileName.c_str(), &db);
 	if (rc)
 		return; //failed to connect
 
