@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MatrixOps.h"
 
+using std::array;
+
 double* MatrixOps::Conv(const bool * f, const double * g)
 {
 	int const n = T + TYI - 1;
@@ -18,10 +20,10 @@ double* MatrixOps::Conv(const bool * f, const double * g)
 	return out;
 }
 
-vector<double> MatrixOps::Conv(vector<bool> const & f, vector<double> const & g)
+array<double, T-1> MatrixOps::Conv(array<bool, T> const & f, array<double, TYI> const & g)
 {
 	int const out_size = T - 1;
-	vector<double> out(out_size, 0);
+	array<double, T - 1> out{};
 	for (auto i(0); i < out_size; ++i) {
 		int const jmn = (i >= TYI - 1) ? i - (TYI - 1) : 0;
 		int const jmx = (i <  out_size) ? i : out_size;
@@ -41,9 +43,9 @@ double* MatrixOps::Multiply(const bool * f, const double * g, const short len)
 	return res;
 }
 
-vector<double> MatrixOps::SumColumns(vector<vector<double>>& vect)
+/*array<double> MatrixOps::SumColumns(array<array<double>>& vect)
 {
-	vector<double> tot = vector<double>(vect[0].size());
+	array<double> tot = array<double>(vect[0].size());
 
 	for (int i = 0; i < vect[0].size(); ++i)
 	{
@@ -55,14 +57,14 @@ vector<double> MatrixOps::SumColumns(vector<vector<double>>& vect)
 	}
 
 	return tot;
-}
+}*/
 
 /*
  Sum the columns where the row's reminder is relevant
 */
-vector<double> MatrixOps::SumColumnsMod(vector<vector<double>>& vect, const short cl)
+array<double, T-1> MatrixOps::SumColumnsMod(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl)
 {
-	vector<double> tot = vector<double>(vect[0].size());
+	array<double, T-1> tot = array<double, T-1>();
 
 	for (int i = 0; i < vect[0].size(); ++i)
 	{
@@ -75,23 +77,3 @@ vector<double> MatrixOps::SumColumnsMod(vector<vector<double>>& vect, const shor
 
 	return tot;
 }
-
- double MatrixOps::Sum(const double * vect, const short size)
- {
-	 double tot = 0;
-
-	 for (int i = 0; i < size; ++i)
-		 tot += vect[i];
-
-	 return tot;
- }
-
- double MatrixOps::Sum(const vector<double>& vect)
- {
-	 double tot = 0;
-
-	 for (int i = 0; i < vect.size(); ++i)
-		 tot += vect[i];
-
-	 return tot;
- }

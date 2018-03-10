@@ -46,7 +46,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 		short c = 0; //class
 		for (int i = 4; i < (rows + 1)*columns; i += columns)
 		{
-			auto alpha = vector<double>(TYI);
+			auto alpha = array<double, TYI>();
 			for (int j = 0; j < TYI; ++j, i += columns)
 			{
 				alpha[j] = atof(results[i]);
@@ -69,7 +69,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 		short c = 0; //class
 		for (int i = 4; i < (rows+1)*columns; i+=columns)
 		{
-			auto beta = vector<double>(TYO);
+			auto beta = array<double,TYO>();
 			for (int j = 0; j < TYO; ++j, i += columns)
 			{
 				beta[j] = atof(results[i]);

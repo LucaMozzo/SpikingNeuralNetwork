@@ -12,7 +12,7 @@ protected:
 public:
 
 	Network();
-	char Run(vector<unsigned char> image);
+	char Run(array<unsigned char, NEURONS_IN> image);
 	void Train(short epochs, int trainingImages = 60000);
 	void Network::ImportData(string fileName = "data.db");
 	void Network::ExportData(string fileName = "data.db");

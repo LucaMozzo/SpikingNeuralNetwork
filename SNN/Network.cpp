@@ -11,7 +11,7 @@ Network::Network()
 	outputLayer = OutputLayer();
 }
 
-char Network::Run(vector<unsigned char> image)
+char Network::Run(array<unsigned char, NEURONS_IN> image)
 {
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();

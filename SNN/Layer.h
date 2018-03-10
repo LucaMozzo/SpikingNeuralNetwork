@@ -3,43 +3,43 @@
 #include <time.h>
 #include "MatrixOps.h"
 
-using std::vector;
+using std::array;
 
 class InputLayer
 {
 protected:
 
-	vector<vector<bool>> trains;
+	array<array<bool, T>, NEURONS_IN> trains;
 	short index = 0;
 
 public:
 
-	vector<vector<double>> alphas;
+	array<array<double, TYI>, CLASSES*NEURONS_IN> alphas;
 
 	InputLayer();
-	void AddTrain(vector<bool>& train);
+	void AddTrain(array<bool, T>& train);
 	void ResetTrains();
-	vector<vector<double>> ApplyAlphas() const;
-	void UpdateAlphas(vector<vector<double>>& errors);
+	array<array<double, T-1>, CLASSES*NEURONS_IN> ApplyAlphas() const;
+	void UpdateAlphas(array<array<double, T>, CLASSES>& errors);
 };
 
 class OutputLayer
 {
 protected:
 
-	vector<vector<double>> u;
-	vector<vector<bool>> y;
+	array<array<double, T>, CLASSES> u;
+	array<array<bool, T>, CLASSES> y;
 
 public:
 
-	vector<vector<double>> betas;
-	vector<double> gammas;
+	array<array<double, TYO>, CLASSES> betas;
+	array<double, CLASSES> gammas;
 
 	OutputLayer();
 	void Reset();
-	void ComputeOutput(vector<vector<double>>& synapsesOut);
-	vector<vector<double>> ComputeErrors(unsigned char label) const;
+	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut);
+	array<array<double, T>, CLASSES> ComputeErrors(unsigned char label) const;
 	char ComputeWinner() const;
-	void UpdateBetas(vector<vector<double>> errors);
-	void UpdateGammas(vector<vector<double>> errors);
+	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
+	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
 };

@@ -3,20 +3,20 @@
 
 InputLayer::InputLayer()
 {
-	trains = vector<vector<bool>>(NEURONS_IN);
-	alphas = vector<vector<double>>(NEURONS_IN*CLASSES);
+	trains = array<array<bool, T>, NEURONS_IN>();
+	alphas = array<array<double, TYI>, CLASSES*NEURONS_IN>();
 
 	//generate alphas randomly
 	for (int i = 0; i < CLASSES*NEURONS_IN; ++i)
 	{
-		alphas[i] = vector<double>(TYI);
+		alphas[i] = array<double, TYI>();
 
 		for (int j = 0; j < TYI; ++j)
 			alphas[i][j] = (rand() % 10 + 1) / 10.0;
 	}
 }
 
-void InputLayer::AddTrain(vector<bool>& train)
+void InputLayer::AddTrain(array<bool, T>& train)
 {
 	trains[index++] = train;
 }
@@ -24,13 +24,13 @@ void InputLayer::AddTrain(vector<bool>& train)
 void InputLayer::ResetTrains()
 {
 	index = 0;
-	trains = vector<vector<bool>>(NEURONS_IN);
+	trains = array<array<bool, T>, NEURONS_IN>();
 }
 
-vector<vector<double>> InputLayer::ApplyAlphas() const
+array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas() const
 {
 	short j = 0; //index for the train
-	vector<vector<double>> result = vector<vector<double>>(CLASSES*NEURONS_IN);
+	array<array<double,T-1>, CLASSES*NEURONS_IN> result = array<array<double, T-1>, CLASSES*NEURONS_IN>();
 	for (short c = 0; c < NEURONS_IN*CLASSES; ++c)
 	{
 		if (c % CLASSES == 0 && c > 0)
@@ -40,7 +40,7 @@ vector<vector<double>> InputLayer::ApplyAlphas() const
 	return result;
 }
 
-void InputLayer::UpdateAlphas(vector<vector<double>>& errors)
+void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 {
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
@@ -64,17 +64,17 @@ void InputLayer::UpdateAlphas(vector<vector<double>>& errors)
 
 OutputLayer::OutputLayer()
 {
-	betas = vector<vector<double>>(CLASSES);
-	u = vector<vector<double>>(CLASSES);
-	y = vector<vector<bool>>(CLASSES);
-	gammas = vector<double>(CLASSES);
+	betas = array<array<double, TYO>, CLASSES>();
+	u = array<array<double, T>, CLASSES>();
+	y = array<array<bool, T>, CLASSES>();
+	gammas = array<double, CLASSES>();
 
 	//srand(time(NULL));
 
 	//generate betas and gammas randomly
 	for (int i = 0; i < 10; ++i)
 	{
-		betas[i] = vector<double>(TYO);
+		betas[i] = array<double, TYO>();
 
 		for (int j = 0; j < TYO; ++j)
 			betas[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
@@ -84,17 +84,17 @@ OutputLayer::OutputLayer()
 
 void OutputLayer::Reset()
 {
-	u = vector<vector<double>>(CLASSES);
-	y = vector<vector<bool>>(CLASSES);
+	u = array<array<double, T>, CLASSES>();
+	y = array<array<bool, T>, CLASSES>();
 }
 
-void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
 		//srand(time(NULL));
-		u[c] = vector<double>(T);
-		y[c] = vector<bool>(T);
+		u[c] = array<double, T>();
+		y[c] = array<bool, T>();
 
 		/*
 		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
@@ -120,9 +120,9 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 
 		for (short t = 1; t < T; ++t)
 		{
-			vector<double> beta = vector<double>(TYO);
+			array<double, TYO> beta = array<double, TYO>();
 			short yIndex = t - TYO;
-			for (short b = 0; b < 2; ++b)
+			for (short b = 0; b < TYO; ++b)
 			{
 				if (yIndex++ >= 0)
 					beta[b] = y[c][yIndex-1] * betas[c][b];
@@ -131,7 +131,7 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 			}
 
 			// sum together alpha, beta, gamma => potential
-			u[c][t] = MatrixOps::Sum(beta) + gammas[c] + alphas[t-1];
+			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
 
 			//compute spiking
 			double probability = g(u[c][t]);
@@ -145,12 +145,12 @@ void OutputLayer::ComputeOutput(vector<vector<double>>& synapsesOut)
 	}
 }
 
-vector<vector<double>> OutputLayer::ComputeErrors(unsigned char label) const
+array<array<double, T>, CLASSES> OutputLayer::ComputeErrors(unsigned char label) const
 {
-	vector<vector<double>> diffs = vector<vector<double>>(CLASSES);
+	array<array<double, T>, CLASSES> diffs = array<array<double, T>, CLASSES>();
 	for (short c = 0; c < CLASSES; ++c)
 	{
-		vector<double> diff = vector<double>(T);
+		array<double, T> diff = array<double, T>();
 		for (short t = 0; t < T; ++t)
 		{
 			diff[t] = (label == c ? 1 : 0) - g(u[c][t]);
@@ -181,7 +181,7 @@ char OutputLayer::ComputeWinner() const
 	return bestIndex;
 }
 
-void OutputLayer::UpdateBetas(vector<vector<double>> errors)
+void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -200,7 +200,7 @@ void OutputLayer::UpdateBetas(vector<vector<double>> errors)
 	}
 }
 
-void OutputLayer::UpdateGammas(vector<vector<double>> errors)
+void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
