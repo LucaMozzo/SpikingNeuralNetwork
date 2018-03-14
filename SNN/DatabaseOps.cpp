@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DatabaseOps.h"
 
+[[deprecated]]
 bool ExecuteNonQuery(sqlite3* db, const char* query)
 {
 	sqlite3_stmt* stmt = nullptr;
@@ -49,44 +50,48 @@ void DatabaseOps::ExportData(InputLayer * inputLayer, OutputLayer * outputLayer,
 	if (res)
 		return; //failed to connect
 	
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+
 	//create tables
 	const char* query = "CREATE TABLE Layer (ID INTEGER PRIMARY KEY AUTOINCREMENT, `TYPE` INTEGER DEFAULT 0 NOT NULL," \
 		 "TY TINYINT NOT NULL, CHECK (TYPE >= 0 AND TYPE <= 2));";
 
-	if (!ExecuteNonQuery(db, query)) 
-		return;
+	sqlite3_exec(db, query, NULL, NULL, NULL);
 
 	query = "CREATE TABLE Weight (ID INTEGER PRIMARY KEY AUTOINCREMENT, `VALUE` DOUBLE NULL DEFAULT NULL, LAYERID INTEGER," \
 		" FOREIGN KEY (LAYERID) REFERENCES Layer(ID));";
 
-	if (!ExecuteNonQuery(db, query))
-		return;
+	sqlite3_exec(db, query, NULL, NULL, NULL);
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
 
 	//insert the data
 	query = ("INSERT INTO Layer (`TYPE`, TY) VALUES(0, " + std::to_string(TYI) + ")").c_str();
-	ExecuteNonQuery(db, query);
+	sqlite3_exec(db, query, NULL, NULL, NULL);
 	query = ("INSERT INTO Layer (`TYPE`, TY) VALUES(2, " + std::to_string(TYO) + ")").c_str();
-	ExecuteNonQuery(db, query);
+	sqlite3_exec(db, query, NULL, NULL, NULL);
 
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 	for(auto& alpha : inputLayer->alphas)
 		for(char i = 0; i < TYI; ++i)
 		{
 			query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(alpha[i]) + ", 1);").c_str();
-			ExecuteNonQuery(db, query);
+			sqlite3_exec(db, query, NULL, NULL, NULL);
 		}
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
 
+	// beta and gamma
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 	for(char i = 0; i < CLASSES; ++i)
 	{
 		for(char j = 0; j < TYO; ++j)
 		{
 			query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->betas[i][j]) + ", 2);").c_str();
-			ExecuteNonQuery(db, query);
+			sqlite3_exec(db, query, NULL, NULL, NULL);
 		}
 		query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->gammas[i]) + ", 2);").c_str();
-		ExecuteNonQuery(db, query);
+		sqlite3_exec(db, query, NULL, NULL, NULL);
 	}
-
-	delete query;
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
 
 	sqlite3_close(db);
 }
