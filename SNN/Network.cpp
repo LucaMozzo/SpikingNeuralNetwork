@@ -38,6 +38,7 @@ void Network::Train(short epochs, int trainingImages)
 {
 	for (short epoch = 0; epoch < epochs; ++epoch)
 	{
+		std::cout << "Iteration" << std::endl;
 		auto data = Utils::GetTrainingData(trainingImages);
 
 		for (int i = 0; i < trainingImages; ++i)
@@ -60,4 +61,27 @@ void Network::ImportData(string fileName)
 void Network::ExportData(string fileName)
 {
 	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
+}
+
+int Network::Validate(bool verbose, short testImages)
+{
+	if (testImages > 10000 || testImages <= 0)
+		return 0;
+
+	auto d = Utils::GetTestData(testImages);
+
+	short correct = 0;
+	for (int i = 0; i < d.size(); ++i)
+	{
+		const auto res = Run(d[i].first);
+		if(verbose)
+			std::cout << "Predicted: " << static_cast<int>(res) << "\tWas: " << static_cast<int>(d[i].second) << std::endl;
+
+		if (static_cast<int>(res) == static_cast<int>(d[i].second))
+			correct++;
+	}
+
+	std::cout << "\n" << correct << "/" << d.size() << " images predicted correctly" << std::endl;
+	
+	return correct;
 }

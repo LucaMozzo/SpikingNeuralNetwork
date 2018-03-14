@@ -14,6 +14,7 @@ public:
 	Network();
 	char Run(array<unsigned char, NEURONS_IN> image);
 	void Train(short epochs, int trainingImages = 60000);
-	void Network::ImportData(string fileName = "data.db");
-	void Network::ExportData(string fileName = "data.db");
+	void ImportData(string fileName = "data.db");
+	void ExportData(string fileName = "data.db");
+	int Validate(bool verbose, short testImages = 10000);
 };
