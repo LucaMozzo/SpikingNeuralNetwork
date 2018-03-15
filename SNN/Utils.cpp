@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Utils.h"
 #include "Constants.h"
-#include <time.h>
-#include <algorithm>
 #include <opencv2\opencv.hpp>
+#include <thread>
+#include <mutex>
 
 using namespace cv;
-using std::pair;
+
+std::mutex Utils::lock;
+
 
 /*
  Return a probability of spiking for every pixel
@@ -85,25 +87,27 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> ReadMNIST(int Numb
 		images_file.read((char*)&n_cols, sizeof(n_cols));
 		n_cols = ReverseInt(n_cols);
 		//generate the array
-		for (int i = 0; i<NumberOfImages; ++i)
+		for (int i = 0; i < NumberOfImages; ++i)
 		{
 			arr[i].first = array<unsigned char, NEURONS_IN>();
 
-			unsigned char temp = 0;
-			labels_file.read((char*)&temp, sizeof(temp));
-			arr[i].second = temp;
-			for (int r = 0; r<n_rows; ++r)
+			unsigned char tmp = 0;
+			labels_file.read((char*)&tmp, sizeof(tmp));
+			arr[i].second = tmp;
+			for (int r = 0; r < n_rows; ++r)
 			{
-				for (int c = 0; c<n_cols; ++c)
+				for (int c = 0; c < n_cols; ++c)
 				{
 					unsigned char temp = 0;
-					images_file.read((char*)&temp, sizeof(temp));
+					images_file.read(reinterpret_cast<char*>(&temp), sizeof(temp));
 					arr[i].first[(n_rows*r) + c] = temp;
 				}
 			}
 		}
 		return arr;
 	}
+	else
+		throw Exception();
 }
 
 /*
@@ -135,4 +139,12 @@ Return the test data
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData(int NumberOfImages)
 {
 	return ReadMNIST(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH);
+}
+
+void Utils::PrintLine(string&& str)
+{
+	lock.lock();
+	const auto threadId = std::this_thread::get_id();
+	std::cout << threadId << "> " << str << std::endl;
+	lock.unlock();
 }
