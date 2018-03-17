@@ -3,7 +3,6 @@
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
 #include <thread>
-#include <mutex>
 
 using namespace cv;
 

@@ -43,3 +43,11 @@ public:
 	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
 	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
 };
+
+/*class HiddenLayer : OutputLayer
+{
+public:
+	array<array<double, TYI>, 20> alphas;
+
+	
+};*/
