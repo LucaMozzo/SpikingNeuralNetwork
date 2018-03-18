@@ -77,3 +77,19 @@ array<double, T-1> MatrixOps::SumColumnsMod(array<array<double, T-1>, CLASSES*NE
 
 	return tot;
 }
+
+array<double, T - 1> MatrixOps::SumColumnsMod2(array<array<double, T - 1>, CLASSES*CLASSES>& vect, const short cl)
+{
+	array<double, T - 1> tot = array<double, T - 1>();
+
+	for (int i = 0; i < vect[0].size(); ++i)
+	{
+		tot[i] = 0;
+		for (int j = cl; j < vect.size(); j += CLASSES)
+		{
+			tot[i] += vect[j][i];
+		}
+	}
+
+	return tot;
+}

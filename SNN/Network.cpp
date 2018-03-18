@@ -11,6 +11,7 @@ Network::Network()
 {
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
+	middleLayer = HiddenLayer();
 }
 
 char Network::Run(array<unsigned char, NEURONS_IN> image)
@@ -18,6 +19,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
 	outputLayer.Reset();
+	middleLayer.Reset();
 
 	// 2. Generate the spikes in the input layer
 	auto probs = Utils::RateEncode(image);
@@ -30,7 +32,9 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
-	outputLayer.ComputeOutput(preProcessedTrains);
+	middleLayer.ComputeOutput(preProcessedTrains);
+	auto preProcessedTrains2 = middleLayer.ApplyAlphas();
+	outputLayer.ComputeOutput(preProcessedTrains2);
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();
@@ -48,7 +52,10 @@ void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned
 			{
 				Run(data[i].first);
 				auto errors = outputLayer.ComputeErrors(data[i].second);
-				inputLayer.UpdateAlphas(errors);
+				middleLayer.UpdateAlphas(errors);
+				middleLayer.UpdateBetas(errors);
+				middleLayer.UpdateGammas(errors);
+				inputLayer.UpdateAlphas(errors, middleLayer.B);
 
 				outputLayer.UpdateBetas(errors);
 				outputLayer.UpdateGammas(errors);
@@ -56,7 +63,7 @@ void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned
 		}
 	else
 	{
-		for (auto& img : *trainingData)
+		/*for (auto& img : *trainingData)
 		{
 			Run(img.first);
 			auto errors = outputLayer.ComputeErrors(img.second);
@@ -64,7 +71,7 @@ void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned
 
 			outputLayer.UpdateBetas(errors);
 			outputLayer.UpdateGammas(errors);
-		}
+		}*/
 	}
 }
 

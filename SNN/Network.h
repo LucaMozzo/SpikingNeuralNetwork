@@ -8,6 +8,7 @@ protected:
 
 	InputLayer inputLayer;
 	OutputLayer outputLayer;
+	HiddenLayer middleLayer;
 
 	void ResetNetwork();
 

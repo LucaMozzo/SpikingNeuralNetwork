@@ -40,7 +40,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas() const
 	return result;
 }
 
-void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
+void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<double, CLASSES>& feedbackMatrix)
 {
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
@@ -57,7 +57,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 		//apply it to every member of alpha
 			for (short t = 0; t < TYI; ++t)
 			{
-				alphas[c][t] += tot;
+				alphas[c][t] += tot * feedbackMatrix[c%10];
 			}
 	}
 }
@@ -88,7 +88,7 @@ void OutputLayer::Reset()
 	y = array<array<bool, T>, CLASSES>();
 }
 
-void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*CLASSES>& synapsesOut)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -106,7 +106,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		...
 		*/
 
-		auto alphas = MatrixOps::SumColumnsMod(synapsesOut, c);
+		auto alphas = MatrixOps::SumColumnsMod2(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
 		//compute spiking
@@ -134,7 +134,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
 
 			//compute spiking
-			double probability = g(u[c][t]);
+			probability = g(u[c][t]);
 			probability = probability * 10000;
 
 			if (rand() % 10000 <= probability)
@@ -206,5 +206,146 @@ void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 	{
 		auto sum = MatrixOps::Sum(errors[c]);
 		gammas[c] += LEARNING_RATE * sum;
+	}
+}
+
+HiddenLayer::HiddenLayer()
+{
+	alphas = array<array<double, TYI>, CLASSES*CLASSES>();
+	B = array<double, CLASSES>();
+
+	//generate alphas randomly
+	for (int i = 0; i < CLASSES*CLASSES; ++i)
+	{
+		alphas[i] = array<double, TYI>();
+
+		for (int j = 0; j < TYI; ++j)
+			alphas[i][j] = (rand() % 10 + 1) / 10.0;
+	}
+
+	//generate B randomly
+	for (int i = 0; i < CLASSES; ++i)
+	{
+		B[i] = (rand() % 10 + 1) / 10.0;
+	}
+}
+
+array<array<double, T - 1>, CLASSES*CLASSES> HiddenLayer::ApplyAlphas() const
+{
+	short j = 0; //index for the train
+	array<array<double, T - 1>, CLASSES*CLASSES> result = array<array<double, T - 1>, CLASSES*CLASSES>();
+	for (short c = 0; c < CLASSES*CLASSES; ++c)
+	{
+		if (c % CLASSES == 0 && c > 0)
+			++j;
+		result[c] = MatrixOps::Conv(y[j], alphas[c]);
+	}
+	return result;
+}
+
+void HiddenLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
+{
+	short j = 0; //index for the train
+	for (short c = 0; c < CLASSES*CLASSES; ++c)
+	{
+		if (c % CLASSES == 0 && c > 0)
+			++j;
+
+		//compute error
+		double tot = 0;
+		for (short t = 0; t < T; ++t)
+			tot += errors[c % 10][t] * y[j][t];
+		tot *= LEARNING_RATE;
+
+		//apply it to every member of alpha
+		for (short t = 0; t < TYI; ++t)
+		{
+			alphas[c][t] += tot;
+		}
+	}
+}
+
+void HiddenLayer::ComputeOutput(array<array<double, T - 1>, CLASSES*NEURONS_IN>& synapsesOut)
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		//srand(time(NULL));
+		u[c] = array<double, T>();
+		y[c] = array<bool, T>();
+
+		/*
+		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
+
+		therefore the alphas relevant to each output neuron are at rows % 10 where the reminder is the class
+		e.g.
+		row 0 -> input neuron 0 to class 0
+		row 1 -> input neuron 0 to class 1
+		...
+		*/
+
+		auto alphas = MatrixOps::SumColumnsMod(synapsesOut, c);
+
+		u[c][0] = gammas[c]; //the first potential will always be just the bias
+							 //compute spiking
+		double probability = g(u[c][0]);
+		probability = probability * 10000;
+
+		if (rand() % 10000 <= probability)
+			y[c][0] = 1;
+		else
+			y[c][0] = 0;
+
+		for (short t = 1; t < T; ++t)
+		{
+			array<double, TYO> beta = array<double, TYO>();
+			short yIndex = t - TYO;
+			for (short b = 0; b < TYO; ++b)
+			{
+				if (yIndex++ >= 0)
+					beta[b] = y[c][yIndex - 1] * betas[c][b];
+				else
+					beta[b] = 0;
+			}
+
+			// sum together alpha, beta, gamma => potential
+			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t - 1];
+
+			//compute spiking
+			probability = g(u[c][t]);
+			probability = probability * 10000;
+
+			if (rand() % 10000 <= probability)
+				y[c][t] = 1;
+			else
+				y[c][t] = 0;
+		}
+	}
+}
+
+void HiddenLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		//compute error
+		double tot = 0;
+		for (short t = 0; t < T; ++t)
+			tot += errors[c][t] * y[c][t];
+
+		tot *= LEARNING_RATE;
+
+		//apply it
+		for (short t = 0; t < TYO; ++t)
+		{
+			betas[c][t] += tot * B[c];
+		}
+	}
+}
+
+void HiddenLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		auto sum = MatrixOps::Sum(errors[c]);
+		gammas[c] += LEARNING_RATE * sum * B[c];
 	}
 }
