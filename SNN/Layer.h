@@ -20,7 +20,7 @@ public:
 	void AddTrain(array<bool, T>& train);
 	void ResetTrains();
 	array<array<double, T-1>, CLASSES*NEURONS_IN> ApplyAlphas() const;
-	void UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<double, CLASSES>& feedbackMatrix);
+	void UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<double, HIDDEN_NEURONS>& feedbackMatrix);
 };
 
 class OutputLayer
@@ -37,28 +37,33 @@ public:
 
 	OutputLayer();
 	void Reset();
-	void ComputeOutput(array<array<double, T-1>, CLASSES*CLASSES>& synapsesOut);
+	void ComputeOutput(array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES>& synapsesOut);
 	array<array<double, T>, CLASSES> ComputeErrors(unsigned char label) const;
 	char ComputeWinner() const;
 	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
 	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
 };
 
-class HiddenLayer : public OutputLayer
+class HiddenLayer
 {
 protected:
 
 public:
 
-	array<array<double, TYI>, CLASSES*CLASSES> alphas;
-	array<double, CLASSES> B;
+	array<array<double, TYI>, HIDDEN_NEURONS*CLASSES> alphas;
+	array<double, HIDDEN_NEURONS> B;
+	array<array<double, TYO>, HIDDEN_NEURONS> betas;;
+	array<array<double, T>, HIDDEN_NEURONS> u;
+	array<array<bool, T>, HIDDEN_NEURONS> y;
+	array<double, HIDDEN_NEURONS> gammas;
 
 	HiddenLayer();
-	array<array<double, T - 1>, CLASSES*CLASSES> ApplyAlphas() const;
+	array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES> ApplyAlphas() const;
 	void UpdateAlphas(array<array<double, T>, CLASSES>& errors);
 
 	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
 	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
+	void Reset();
 
 	void ComputeOutput(array<array<double, T - 1>, CLASSES*NEURONS_IN>& synapsesOut);
 

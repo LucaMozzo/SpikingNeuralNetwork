@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Layer.h"
+#include <algorithm>
+#include <algorithm>
 
 InputLayer::InputLayer()
 {
@@ -40,7 +42,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas() const
 	return result;
 }
 
-void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<double, CLASSES>& feedbackMatrix)
+void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<double, HIDDEN_NEURONS>& feedbackMatrix)
 {
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
@@ -57,7 +59,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors, array<do
 		//apply it to every member of alpha
 			for (short t = 0; t < TYI; ++t)
 			{
-				alphas[c][t] += tot * feedbackMatrix[c%10];
+				alphas[c][t] += tot * feedbackMatrix[c%HIDDEN_NEURONS];
 			}
 	}
 }
@@ -88,7 +90,7 @@ void OutputLayer::Reset()
 	y = array<array<bool, T>, CLASSES>();
 }
 
-void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*CLASSES>& synapsesOut)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, HIDDEN_NEURONS*CLASSES>& synapsesOut)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -211,11 +213,16 @@ void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 
 HiddenLayer::HiddenLayer()
 {
-	alphas = array<array<double, TYI>, CLASSES*CLASSES>();
-	B = array<double, CLASSES>();
+	alphas = array<array<double, TYI>, HIDDEN_NEURONS*CLASSES>();
+	B = array<double, HIDDEN_NEURONS>();
+
+	betas = array<array<double, TYO>, HIDDEN_NEURONS>();
+	u = array<array<double, T>, HIDDEN_NEURONS>();
+	y = array<array<bool, T>, HIDDEN_NEURONS>();
+	gammas = array<double, HIDDEN_NEURONS>();
 
 	//generate alphas randomly
-	for (int i = 0; i < CLASSES*CLASSES; ++i)
+	for (int i = 0; i < HIDDEN_NEURONS*CLASSES; ++i)
 	{
 		alphas[i] = array<double, TYI>();
 
@@ -224,17 +231,17 @@ HiddenLayer::HiddenLayer()
 	}
 
 	//generate B randomly
-	for (int i = 0; i < CLASSES; ++i)
+	for (int i = 0; i < HIDDEN_NEURONS; ++i)
 	{
 		B[i] = (rand() % 10 + 1) / 10.0;
 	}
 }
 
-array<array<double, T - 1>, CLASSES*CLASSES> HiddenLayer::ApplyAlphas() const
+array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES> HiddenLayer::ApplyAlphas() const
 {
 	short j = 0; //index for the train
-	array<array<double, T - 1>, CLASSES*CLASSES> result = array<array<double, T - 1>, CLASSES*CLASSES>();
-	for (short c = 0; c < CLASSES*CLASSES; ++c)
+	array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES> result = array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES>();
+	for (short c = 0; c < HIDDEN_NEURONS*CLASSES; ++c)
 	{
 		if (c % CLASSES == 0 && c > 0)
 			++j;
@@ -324,7 +331,7 @@ void HiddenLayer::ComputeOutput(array<array<double, T - 1>, CLASSES*NEURONS_IN>&
 
 void HiddenLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 {
-	for (short c = 0; c < CLASSES; ++c)
+	/*for (short c = 0; c < HIDDEN_NEURONS; ++c)
 	{
 		//compute error
 		double tot = 0;
@@ -338,14 +345,20 @@ void HiddenLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 		{
 			betas[c][t] += tot * B[c];
 		}
-	}
+	}*/
 }
 
 void HiddenLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 {
-	for (short c = 0; c < CLASSES; ++c)
+	/*for (short c = 0; c < HIDDEN_NEURONS; ++c)
 	{
 		auto sum = MatrixOps::Sum(errors[c]);
 		gammas[c] += LEARNING_RATE * sum * B[c];
-	}
+	}*/
+}
+
+void HiddenLayer::Reset()
+{
+	u = array<array<double, T>, HIDDEN_NEURONS>();
+	y = array<array<bool, T>, HIDDEN_NEURONS>();
 }

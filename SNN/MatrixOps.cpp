@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MatrixOps.h"
+#include <algorithm>
 
 using std::array;
 
@@ -78,7 +79,7 @@ array<double, T-1> MatrixOps::SumColumnsMod(array<array<double, T-1>, CLASSES*NE
 	return tot;
 }
 
-array<double, T - 1> MatrixOps::SumColumnsMod2(array<array<double, T - 1>, CLASSES*CLASSES>& vect, const short cl)
+array<double, T - 1> MatrixOps::SumColumnsMod2(array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES>& vect, const short cl)
 {
 	array<double, T - 1> tot = array<double, T - 1>();
 

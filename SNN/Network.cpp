@@ -40,7 +40,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 	return outputLayer.ComputeWinner();
 }
 
-void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData)
+void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData, bool validateAfterEpoch)
 {
 	if(!trainingData)
 		for (short epoch = 0; epoch < epochs; ++epoch)
@@ -60,9 +60,13 @@ void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned
 				outputLayer.UpdateBetas(errors);
 				outputLayer.UpdateGammas(errors);
 			}
+
+			if (validateAfterEpoch)
+				Validate();
 		}
 	else
 	{
+		//TODO fix this
 		/*for (auto& img : *trainingData)
 		{
 			Run(img.first);

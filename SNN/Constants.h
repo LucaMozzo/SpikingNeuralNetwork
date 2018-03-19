@@ -7,12 +7,13 @@ using std::string;
 using std::vector;
 
 const short CLASSES = 10;
+const short HIDDEN_NEURONS = 50;
 const short NEURONS_IN = 784;
 
 const short T = 8;
 const short TYI = 4;
 const short TYO = 2;
-const float LEARNING_RATE = 0.001;
+const float LEARNING_RATE = 0.00005;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths

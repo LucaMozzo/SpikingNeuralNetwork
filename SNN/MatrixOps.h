@@ -13,7 +13,7 @@ public:
 	//static array<double> SumColumns(array<array<double>>& vect);
 	static array<double, T-1> SumColumnsMod(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl);
 
-	static array<double, T - 1> SumColumnsMod2(array<array<double, T - 1>, CLASSES*CLASSES>& vect, const short cl);
+	static array<double, T - 1> SumColumnsMod2(array<array<double, T - 1>, HIDDEN_NEURONS*CLASSES>& vect, const short cl);
 
 	template<std::size_t SIZE>
 	static double Sum(const array<double, SIZE>& vect);
