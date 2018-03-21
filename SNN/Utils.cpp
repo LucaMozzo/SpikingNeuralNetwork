@@ -4,10 +4,17 @@
 #include <opencv2\opencv.hpp>
 #include <thread>
 
+# define M_PI 3.14159265358979323846L
+
 using namespace cv;
 
 std::mutex Utils::lock;
 
+
+float Utils::RaisedCosine(int time, int mean, float stddev)
+{
+	return 0.5 * (1 + cos((time - mean) / stddev * M_PI));
+}
 
 /*
  Return a probability of spiking for every pixel
@@ -138,6 +145,16 @@ Return the test data
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData(int NumberOfImages)
 {
 	return ReadMNIST(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH);
+}
+
+array<float, T> Utils::GenerateBasisMatrix(short meanOffset)
+{
+	array<float, T> result{};
+
+	for (int t = 0; t < T; ++t)
+		result[t] = RaisedCosine(t, T + meanOffset, 10);
+
+	return result;
 }
 
 void Utils::PrintLine(string&& str)

@@ -9,9 +9,9 @@ using std::vector;
 const short CLASSES = 10;
 const short NEURONS_IN = 784;
 
-const short T = 18;
-const short TYI = 8;
-const short TYO = 4;
+const short T = 8;
+const short TYI = 4;
+const short TYO = 2;
 const float LEARNING_RATE = 0.0001;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
