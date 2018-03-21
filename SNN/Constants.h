@@ -13,7 +13,7 @@ const short NEURONS_IN = 784;
 const short T = 8;
 const short TYI = 4;
 const short TYO = 2;
-const float LEARNING_RATE = 0.00005;
+const float LEARNING_RATE = 0.1;//0.00005;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths

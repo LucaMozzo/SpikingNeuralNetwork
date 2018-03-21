@@ -66,16 +66,18 @@ void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned
 		}
 	else
 	{
-		//TODO fix this
-		/*for (auto& img : *trainingData)
+		for (auto& img : *trainingData)
 		{
 			Run(img.first);
 			auto errors = outputLayer.ComputeErrors(img.second);
-			inputLayer.UpdateAlphas(errors);
+			middleLayer.UpdateAlphas(errors);
+			middleLayer.UpdateBetas(errors);
+			middleLayer.UpdateGammas(errors);
+			inputLayer.UpdateAlphas(errors, middleLayer.B);
 
 			outputLayer.UpdateBetas(errors);
 			outputLayer.UpdateGammas(errors);
-		}*/
+		}
 	}
 }
 
@@ -155,4 +157,5 @@ void Network::ResetNetwork()
 {
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
+	middleLayer = HiddenLayer();
 }

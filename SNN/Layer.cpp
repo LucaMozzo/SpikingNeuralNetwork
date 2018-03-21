@@ -331,12 +331,14 @@ void HiddenLayer::ComputeOutput(array<array<double, T - 1>, CLASSES*NEURONS_IN>&
 
 void HiddenLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 {
-	/*for (short c = 0; c < HIDDEN_NEURONS; ++c)
+	//every neuron in the middle layer is equally responsible for the result
+	auto errorsTot = MatrixOps::SumColumns(errors);
+	for (short c = 0; c < HIDDEN_NEURONS; ++c)
 	{
 		//compute error
 		double tot = 0;
 		for (short t = 0; t < T; ++t)
-			tot += errors[c][t] * y[c][t];
+			tot += errorsTot[t] * y[c][t];
 
 		tot *= LEARNING_RATE;
 
@@ -345,16 +347,18 @@ void HiddenLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 		{
 			betas[c][t] += tot * B[c];
 		}
-	}*/
+	}
 }
 
 void HiddenLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 {
-	/*for (short c = 0; c < HIDDEN_NEURONS; ++c)
+	//every neuron in the middle layer is equally responsible for the result
+	auto errorsTot = MatrixOps::SumColumns(errors);
+	for (short c = 0; c < HIDDEN_NEURONS; ++c)
 	{
-		auto sum = MatrixOps::Sum(errors[c]);
+		auto sum = MatrixOps::Sum(errorsTot);
 		gammas[c] += LEARNING_RATE * sum * B[c];
-	}*/
+	}
 }
 
 void HiddenLayer::Reset()

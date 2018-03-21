@@ -17,6 +17,9 @@ public:
 
 	template<std::size_t SIZE>
 	static double Sum(const array<double, SIZE>& vect);
+
+	template<std::size_t ROWS, std::size_t COLS>
+	static array<double, COLS> SumColumns(array<array<double, COLS>, ROWS>& vect);
 };
 
 template<std::size_t SIZE>
@@ -26,6 +29,23 @@ inline double MatrixOps::Sum(const array<double, SIZE>& vect)
 
 	for (int i = 0; i < vect.size(); ++i)
 		tot += vect[i];
+
+	return tot;
+}
+
+template <std::size_t ROWS, std::size_t COLS>
+array<double, COLS> MatrixOps::SumColumns(array<array<double, COLS>, ROWS>& vect)
+{
+	array<double, COLS> tot = array<double, COLS>();
+
+	for (int i = 0; i < vect[0].size(); ++i)
+	{
+		tot[i] = 0;
+		for (int j = 0; j < vect.size(); ++j)
+		{
+			tot[i] += vect[j][i];
+		}
+	}
 
 	return tot;
 }

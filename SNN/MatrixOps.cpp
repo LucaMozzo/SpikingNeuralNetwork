@@ -44,22 +44,6 @@ double* MatrixOps::Multiply(const bool * f, const double * g, const short len)
 	return res;
 }
 
-/*array<double> MatrixOps::SumColumns(array<array<double>>& vect)
-{
-	array<double> tot = array<double>(vect[0].size());
-
-	for (int i = 0; i < vect[0].size(); ++i)
-	{
-		tot[i] = 0;
-		for (int j = 0; j < vect.size(); ++j)
-		{
-			tot[i] += vect[j][i];
-		}
-	}
-
-	return tot;
-}*/
-
 /*
  Sum the columns where the row's reminder is relevant
 */
