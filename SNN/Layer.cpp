@@ -17,6 +17,7 @@ InputLayer::InputLayer()
 	}
 
 	basis = Utils::GenerateAlphaBasis();
+	auto z = MatrixOps::Transpose(basis);
 }
 
 void InputLayer::AddTrain(array<bool, T>& train)

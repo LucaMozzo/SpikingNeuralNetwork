@@ -77,3 +77,4 @@ array<double, T-1> MatrixOps::SumColumnsMod(array<array<double, T-1>, CLASSES*NE
 
 	return tot;
 }
+

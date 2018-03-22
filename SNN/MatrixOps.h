@@ -20,6 +20,9 @@ public:
 
 	template<std::size_t SIZE>
 	static double Sum(const array<double, SIZE>& vect);
+
+	template<std::size_t ROWS, std::size_t COLS>
+	static array<array<double, ROWS>, COLS> Transpose(array<array<double, COLS>, ROWS>& input);
 };
 
 // implementation of the template methods 
@@ -52,4 +55,20 @@ inline double MatrixOps::Sum(const array<double, SIZE>& vect)
 		tot += vect[i];
 
 	return tot;
+}
+
+template<std::size_t ROWS, std::size_t COLS>
+inline array<array<double, ROWS>, COLS> MatrixOps::Transpose(array<array<double, COLS>, ROWS>& input)
+{
+	auto res  = array<array<double, ROWS>, COLS>();
+
+	for (short r = 0; r < ROWS; ++r)
+	{
+		for (short c = 0; c < COLS; ++c)
+		{
+			res[c][r] = input[r][c];
+		}
+	}
+
+	return res;
 }
