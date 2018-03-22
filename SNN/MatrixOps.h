@@ -7,13 +7,14 @@ class MatrixOps
 {
 public:
 	//Performs a reduced convolution to aggregate the trains and alpha
-	[[deprecated]]
-	static double* Conv(const bool* f, const double* g);
 	static array<double, T-1> Conv(array<bool,T> const &f, array<double,TYI> const &g);
-	[[deprecated]]
-	static double* Multiply(const bool* f, const double* g, const short len);
 	//static array<double> SumColumns(array<array<double>>& vect);
 	static array<double, T-1> SumColumnsMod(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl);
+
+	//multiply array by constant
+	template<std::size_t SIZE>
+	static void
+	Multiply(double c, array<double, SIZE>& vect);
 	
 	template<std::size_t ROWS, std::size_t COLS>
 	static array<double, ROWS> Dot(array<array<double, COLS>, ROWS>& basis, array<double, COLS>& weight);
@@ -24,8 +25,14 @@ public:
 	template<std::size_t ROWS, std::size_t COLS>
 	static array<array<double, ROWS>, COLS> Transpose(array<array<double, COLS>, ROWS>& input);
 };
-
 // implementation of the template methods 
+template<std::size_t SIZE>
+inline void MatrixOps::Multiply(double c, array<double, SIZE>& vect)
+{
+	for (short i = 0; i < SIZE; ++i)
+		vect[i] = vect[i] * c;
+}
+
 template<std::size_t ROWS, std::size_t COLS>
 inline array<double, ROWS> MatrixOps::Dot(array<array<double, COLS>, ROWS>& basis, array<double, COLS>& weight)
 {

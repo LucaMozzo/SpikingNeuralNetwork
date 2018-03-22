@@ -53,16 +53,27 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 			++j;
 
 		//compute error
-		double tot = 0;
+		//double tot = 0;
+		array<double, TYI> err{};
 		for (short t = 0; t < T; ++t)
-			tot += errors[c%10][t] * trains[j][t];
-		tot *= LEARNING_RATE;
-
-		//apply it to every member of alpha
-			for (short t = 0; t < TYI; ++t)
+		{
+			short index = 0;
+			for(short i = t-1; i > t-TYI; --i)
 			{
-				alphas[c][t] += tot;
+				if (i < 0)
+					continue;
+				err[index++] += errors[c % 10][t] * trains[j][i];
 			}
+		}
+
+		MatrixOps::Multiply(LEARNING_RATE, err);
+
+		
+		//apply it to every member of alpha
+		for (short t = 0; t < TYI; ++t)
+		{
+			alphas[c][t] += err[t];
+		}
 	}
 }
 

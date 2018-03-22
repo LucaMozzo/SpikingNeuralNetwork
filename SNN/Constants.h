@@ -14,7 +14,7 @@ const short TYI = 4;
 const short Ka = TYI;
 const short TYO = 2;
 const short Kb = TYO;
-const float LEARNING_RATE = 0.00005;
+const float LEARNING_RATE =  0.1; // 0.00005;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths
