@@ -20,5 +20,7 @@ public:
 	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTrainingData(int NumberOfImages);
 	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTestData(int NumberOfImages);
 	static array<float, T> GenerateBasisMatrix(short meanOffset);
+	static array<array<double, Ka>, TYI> GenerateAlphaBasis();
+	static array<array<double, Kb>, TYO> GenerateBetaBasis();
 	static void PrintLine(string&& str);
 };

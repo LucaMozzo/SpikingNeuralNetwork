@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <time.h>
 #include "MatrixOps.h"
 
 using std::array;
@@ -10,6 +9,7 @@ class InputLayer
 protected:
 
 	array<array<bool, T>, NEURONS_IN> trains;
+	array<array<double, Ka>, TYI> basis;
 	short index = 0;
 
 public:
@@ -19,7 +19,7 @@ public:
 	InputLayer();
 	void AddTrain(array<bool, T>& train);
 	void ResetTrains();
-	array<array<double, T-1>, CLASSES*NEURONS_IN> ApplyAlphas() const;
+	array<array<double, T-1>, CLASSES*NEURONS_IN> ApplyAlphas();
 	void UpdateAlphas(array<array<double, T>, CLASSES>& errors);
 };
 
@@ -29,6 +29,7 @@ protected:
 
 	array<array<double, T>, CLASSES> u;
 	array<array<bool, T>, CLASSES> y;
+	array<array<double, Kb>, TYO> basis;
 
 public:
 
@@ -43,11 +44,3 @@ public:
 	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
 	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
 };
-
-/*class HiddenLayer : OutputLayer
-{
-public:
-	array<array<double, TYI>, 20> alphas;
-
-	
-};*/

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Layer.h"
+#include "Utils.h"
 
 InputLayer::InputLayer()
 {
@@ -14,6 +15,8 @@ InputLayer::InputLayer()
 		for (int j = 0; j < TYI; ++j)
 			alphas[i][j] = (rand() % 10 + 1) / 10.0;
 	}
+
+	basis = Utils::GenerateAlphaBasis();
 }
 
 void InputLayer::AddTrain(array<bool, T>& train)
@@ -27,7 +30,7 @@ void InputLayer::ResetTrains()
 	trains = array<array<bool, T>, NEURONS_IN>();
 }
 
-array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas() const
+array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas()
 {
 	short j = 0; //index for the train
 	array<array<double,T-1>, CLASSES*NEURONS_IN> result = array<array<double, T-1>, CLASSES*NEURONS_IN>();
@@ -35,7 +38,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas() const
 	{
 		if (c % CLASSES == 0 && c > 0)
 			++j;
-		result[c] = MatrixOps::Conv(trains[j], alphas[c]);
+		result[c] = MatrixOps::Conv(trains[j], MatrixOps::Dot(basis, alphas[c]));
 	}
 	return result;
 }
@@ -80,6 +83,8 @@ OutputLayer::OutputLayer()
 			betas[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
 		gammas[i] = (rand() % 10 + 1) / 10.0;;
 	}
+
+	basis = Utils::GenerateBetaBasis();
 }
 
 void OutputLayer::Reset()
@@ -125,7 +130,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			for (short b = 0; b < TYO; ++b)
 			{
 				if (yIndex++ >= 0)
-					beta[b] = y[c][yIndex-1] * betas[c][b];
+					beta[b] = y[c][yIndex-1] * MatrixOps::Dot(basis, betas[c])[b];
 				else
 					beta[b] = 0;
 			}
@@ -134,7 +139,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
 
 			//compute spiking
-			double probability = g(u[c][t]);
+			probability = g(u[c][t]);
 			probability = probability * 10000;
 
 			if (rand() % 10000 <= probability)

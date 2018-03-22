@@ -3,6 +3,8 @@
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
 #include <thread>
+#include <algorithm>
+#include <algorithm>
 
 # define M_PI 3.14159265358979323846L
 
@@ -13,7 +15,41 @@ std::mutex Utils::lock;
 
 float Utils::RaisedCosine(int time, int mean, float stddev)
 {
-	return 0.5 * (1 + cos((time - mean) / stddev * M_PI));
+	return 0.5 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
+}
+
+array<float, T> Utils::GenerateBasisMatrix(short meanOffset)
+{
+	array<float, T> result{};
+
+	for (int t = 0; t < T; ++t)
+		result[t] = RaisedCosine(t, T + meanOffset, 10);
+
+	return result;
+}
+
+array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
+{
+	array<array<double, Ka>, TYI> result = array<array<double, Ka>, TYI>();
+	for(short i = 0; i < 2*Ka; i+=2)
+	{
+		result[i / 2] = array<double, Ka>();
+		for (short j = 0; j < TYI; ++j)
+			result[i / 2][j] = RaisedCosine(j, i, Ka);
+	}
+	return result;
+}
+
+array<array<double, Kb>, TYO> Utils::GenerateBetaBasis()
+{
+	array<array<double, Kb>, TYO> result = array<array<double, Kb>, TYO>();
+	for (short i = 0; i < 2 * Kb; i += 2)
+	{
+		result[i / 2] = array<double, Kb>();
+		for (short j = 0; j < TYO; ++j)
+			result[i / 2][j] = RaisedCosine(j, i, Kb);
+	}
+	return result;
 }
 
 /*
@@ -145,16 +181,6 @@ Return the test data
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData(int NumberOfImages)
 {
 	return ReadMNIST(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH);
-}
-
-array<float, T> Utils::GenerateBasisMatrix(short meanOffset)
-{
-	array<float, T> result{};
-
-	for (int t = 0; t < T; ++t)
-		result[t] = RaisedCosine(t, T + meanOffset, 10);
-
-	return result;
 }
 
 void Utils::PrintLine(string&& str)
