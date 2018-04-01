@@ -78,12 +78,16 @@ void Network::ExportData(string fileName)
 	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
 }
 
-int Network::Validate(short testImages)
+int Network::Validate(short testImages, bool testSet)
 {
 	if (testImages > 10000 || testImages <= 0)
 		return 0;
 
-	auto d = Utils::GetTestData(testImages);
+	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> d;
+	if (testSet)
+		d = Utils::GetTestData(testImages);
+	else
+		d = Utils::GetTrainingData(testImages);
 
 	return ValidateDataset(d);
 }

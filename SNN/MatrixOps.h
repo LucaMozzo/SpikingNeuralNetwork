@@ -24,6 +24,9 @@ public:
 
 	template<std::size_t ROWS, std::size_t COLS>
 	static array<array<double, ROWS>, COLS> Transpose(array<array<double, COLS>, ROWS>& input);
+
+	template<std::size_t SIZE>
+	static array<double, SIZE> SumArrays(array<double, SIZE> a, array<double, SIZE> b);
 };
 // implementation of the template methods 
 template<std::size_t SIZE>
@@ -76,6 +79,17 @@ inline array<array<double, ROWS>, COLS> MatrixOps::Transpose(array<array<double,
 			res[c][r] = input[r][c];
 		}
 	}
+
+	return res;
+}
+
+template<std::size_t SIZE>
+inline array<double, SIZE> MatrixOps::SumArrays(array<double, SIZE> a, array<double, SIZE> b)
+{
+	auto res = array<double, SIZE>();
+
+	for (short i = 0; i < SIZE; ++i)
+		res[i] = a[i] + b[i];
 
 	return res;
 }

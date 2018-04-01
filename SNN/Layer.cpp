@@ -17,7 +17,6 @@ InputLayer::InputLayer()
 	}
 
 	basis = Utils::GenerateAlphaBasis();
-	auto z = MatrixOps::Transpose(basis);
 }
 
 void InputLayer::AddTrain(array<bool, T>& train)
@@ -57,13 +56,19 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 		array<double, TYI> err{};
 		for (short t = 0; t < T; ++t)
 		{
-			short index = 0;
+			array<double, TYI> trainWindow{ };
 			for(short i = t-1; i > t-TYI; --i)
 			{
 				if (i < 0)
-					continue;
-				err[index++] += errors[c % 10][t] * trains[j][i];
+					trainWindow[i] = 0;
+				else
+					trainWindow[i] = trains[j][i];
 			}
+
+			auto basisT = MatrixOps::Transpose(basis);
+			auto tmp = MatrixOps::Dot(basisT, trainWindow);
+			MatrixOps::Multiply(errors[c%10][t], tmp);
+			err = MatrixOps::SumArrays(err, tmp);
 		}
 
 		MatrixOps::Multiply(LEARNING_RATE, err);
@@ -203,16 +208,31 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 	for (short c = 0; c < CLASSES; ++c)
 	{
 		//compute error
-		double tot = 0;
+		array<double, TYO> err{};
 		for (short t = 0; t < T; ++t)
-			tot += errors[c][t] * y[c][t];
+		{
+			array<double, TYO> trainWindow{};
+			for (short i = t - TYI; i < t - 1 ; ++i)
+			{
+				if (i < 0)
+					trainWindow[i] = 0;
+				else
+					trainWindow[i] = y[c][i];
+			}
 
-		tot *= LEARNING_RATE;
+			auto basisT = MatrixOps::Transpose(basis);
+			auto tmp = MatrixOps::Dot(basisT, trainWindow);
+			MatrixOps::Multiply(errors[c][t], tmp);
+			err = MatrixOps::SumArrays(err, tmp);
+		}
+
+		MatrixOps::Multiply(LEARNING_RATE, err);
+
 
 		//apply it
 		for (short t = 0; t < TYO; ++t)
 		{
-			betas[c][t] += tot;
+			betas[c][t] += err[t];
 		}
 	}
 }
