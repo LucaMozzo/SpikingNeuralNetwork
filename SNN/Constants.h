@@ -9,10 +9,10 @@ using std::vector;
 const short CLASSES = 10;
 const short NEURONS_IN = 784;
 
-const short T = 12;
-const short TYI = 8;
+const short T = 4;
+const short TYI = 3;
 const short Ka = TYI;
-const short TYO = 4;
+const short TYO = 2;
 const short Kb = TYO;
 const float LEARNING_RATE =  0.00005;
 const std::pair<float, float> P_RANGE = { 0, 0.5 };

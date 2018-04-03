@@ -57,12 +57,16 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 		for (short t = 0; t < T; ++t)
 		{
 			array<double, TYI> trainWindow{ };
+			short index = 0;
 			for(short i = t-1; i > t-TYI; --i)
 			{
 				if (i < 0)
-					trainWindow[i] = 0;
-				else
+					trainWindow[index++] = 0;
+				else 
+				{
 					trainWindow[i] = trains[j][i];
+					++index;
+				}
 			}
 
 			auto basisT = MatrixOps::Transpose(basis);
@@ -212,12 +216,16 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 		for (short t = 0; t < T; ++t)
 		{
 			array<double, TYO> trainWindow{};
+			short index = 0;
 			for (short i = t - TYI; i < t - 1 ; ++i)
 			{
 				if (i < 0)
-					trainWindow[i] = 0;
-				else
+					trainWindow[index++] = 0;
+				else 
+				{
 					trainWindow[i] = y[c][i];
+					++index;
+				}
 			}
 
 			auto basisT = MatrixOps::Transpose(basis);

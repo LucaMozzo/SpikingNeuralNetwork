@@ -18,7 +18,7 @@ public:
 	void Train(short epochs, int trainingImages = 60000, vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData = nullptr);
 	void ImportData(string fileName = "data.db");
 	void ExportData(string fileName = "data.db");
-	int Validate(short testImages = 10000, bool testSet = true);
+	int Validate(int testImages = 10000, bool testSet = true);
 	int ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet);
 	int CrossValidate();
 };
