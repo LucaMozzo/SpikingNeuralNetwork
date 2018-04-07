@@ -6,6 +6,7 @@
 #include <thread>
 
 using std::string;
+using std::vector;
 
 Network::Network()
 {

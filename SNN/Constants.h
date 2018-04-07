@@ -4,17 +4,25 @@
 #include <fstream>
 
 using std::string;
-using std::vector;
 
+// number of classes
 const short CLASSES = 10;
+// number of inputs
 const short NEURONS_IN = 784;
 
-const short T = 4;
-const short TYI = 3;
+// size of train
+const short T = 12;
+// length of relevant window
+const short TYI = 8;
+// number of alpha bases
 const short Ka = TYI;
-const short TYO = 2;
+// length of relevant window
+const short TYO = 4;
+// number of beta bases
 const short Kb = TYO;
-const float LEARNING_RATE =  0.00005;
+// learning rate
+const float LEARNING_RATE =  0.00002;
+// range of probabilities for spike decoding
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
 // Resource paths
