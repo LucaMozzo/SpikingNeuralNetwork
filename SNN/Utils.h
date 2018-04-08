@@ -3,6 +3,7 @@
 #include <mutex>
 
 using std::array;
+using std::vector;
 using std::string;
 using std::pair;
 
