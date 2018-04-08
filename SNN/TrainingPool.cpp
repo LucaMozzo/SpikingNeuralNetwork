@@ -10,7 +10,7 @@ void TrainingPool::InitTraining(short epochs, int trainingImages, string dbOut, 
 	Utils::PrintLine("Training started.");
 
 	Network network{};
-	network.Train(epochs, trainingImages);
+	network.Train<0>(epochs, trainingImages);
 	network.ExportData(dbOut);
 
 	Utils::PrintLine("Training completed.");
@@ -26,7 +26,7 @@ void TrainingPool::InitTraining(short epochs, int trainingImages, string dbOut, 
 	if(validate)
 	{
 		Utils::PrintLine("Validation started.");
-		network.Validate();
+		network.Validate<0>();
 		Utils::PrintLine("Validation completed.");
 	}
 }

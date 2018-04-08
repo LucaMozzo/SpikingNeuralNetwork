@@ -36,38 +36,6 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 	return outputLayer.ComputeWinner();
 }
 
-void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData)
-{
-	if(!trainingData)
-		for (short epoch = 0; epoch < epochs; ++epoch)
-		{
-			Utils::PrintLine("Iteration " + std::to_string(epoch));
-			auto data = Utils::GetTrainingData(trainingImages);
-
-			for (int i = 0; i < trainingImages; ++i)
-			{
-				Run(data[i].first);
-				auto errors = outputLayer.ComputeErrors(data[i].second);
-				inputLayer.UpdateAlphas(errors);
-
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
-			}
-		}
-	else
-	{
-		for (auto& img : *trainingData)
-		{
-			Run(img.first);
-			auto errors = outputLayer.ComputeErrors(img.second);
-			inputLayer.UpdateAlphas(errors);
-
-			outputLayer.UpdateBetas(errors);
-			outputLayer.UpdateGammas(errors);
-		}
-	}
-}
-
 void Network::ImportData(string fileName)
 {
 	DatabaseOps::ImportData(&inputLayer, &outputLayer, fileName);
@@ -76,22 +44,6 @@ void Network::ImportData(string fileName)
 void Network::ExportData(string fileName)
 {
 	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
-}
-
-int Network::Validate(int testImages, bool testSet)
-{
-	/*if (testImages > 10000 || testImages <= 0)
-		return 0;*/
-	
-	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> d;
-	if (testSet)
-		d = Utils::GetTestData(testImages);
-	else
-	{
-		d = Utils::GetTrainingData(testImages);
-	}
-
-	return ValidateDataset(d);
 }
 
 int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
@@ -112,7 +64,7 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 
 int Network::CrossValidate()
 {
-	auto data = Utils::GetTrainingData(60000);
+	auto data = Utils::GetTrainingData<0>(60000);
 	int sum = 0;
 
 	vector<vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>> folds{};
@@ -138,7 +90,7 @@ int Network::CrossValidate()
 
 		//train and validate
 		ResetNetwork();
-		Train(0,0,&trainingSet);
+		Train<0>(0,0,&trainingSet);
 		sum += ValidateDataset(folds[i]);
 	}
 
