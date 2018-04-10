@@ -64,7 +64,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 					trainWindow[index++] = 0;
 				else 
 				{
-					trainWindow[i] = trains[j][i];
+					trainWindow[index] = trains[j][i];
 					++index;
 				}
 			}
@@ -223,7 +223,7 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 					trainWindow[index++] = 0;
 				else 
 				{
-					trainWindow[i] = y[c][i];
+					trainWindow[index] = y[c][i];
 					++index;
 				}
 			}
