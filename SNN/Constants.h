@@ -11,17 +11,17 @@ const short CLASSES = 10;
 const short NEURONS_IN = 784;
 
 // size of train
-const short T = 12;
+const short T = 4;
 // length of relevant window
-const short TYI = 8;
+const short TYI = 3;
 // number of alpha bases
 const short Ka = TYI;
 // length of relevant window
-const short TYO = 4;
+const short TYO = 2;
 // number of beta bases
 const short Kb = TYO;
 // learning rate
-const float LEARNING_RATE =  0.00002;
+const float LEARNING_RATE =  0.00005;
 // range of probabilities for spike decoding
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 

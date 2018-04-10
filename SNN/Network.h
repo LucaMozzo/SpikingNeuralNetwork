@@ -35,7 +35,7 @@ void Network::Train(short epochs, int trainingImages,
 			Utils::PrintLine("Iteration " + std::to_string(epoch));
 			auto data = Utils::GetTrainingData(trainingImages, filter);
 
-			for (int i = 0; i < trainingImages; ++i)
+			for (int i = 0; i < data.size(); ++i)
 			{
 				Run(data[i].first);
 				auto errors = outputLayer.ComputeErrors(data[i].second);

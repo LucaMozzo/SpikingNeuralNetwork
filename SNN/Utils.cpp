@@ -16,16 +16,6 @@ float Utils::RaisedCosine(int time, int mean, float stddev)
 	return 0.5 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
 }
 
-array<float, T> Utils::GenerateBasisMatrix(short meanOffset)
-{
-	array<float, T> result{};
-
-	for (int t = 0; t < T; ++t)
-		result[t] = RaisedCosine(t, T + meanOffset, 10);
-
-	return result;
-}
-
 array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 {
 	array<array<double, Ka>, TYI> result = array<array<double, Ka>, TYI>();
@@ -102,3 +92,4 @@ void Utils::PrintLine(string&& str)
 	std::cout << threadId << "> " << str << std::endl;
 	lock.unlock();
 }
+

@@ -49,7 +49,7 @@ void Network::ExportData(string fileName)
 
 int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
 {
-	short correct = 0;
+	int correct = 0;
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
 		const auto res = Run(trainingSet[i].first);
@@ -58,7 +58,7 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 			correct++;
 	}
 
-	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly");
+	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()) + "%)");
 
 	return correct;
 }

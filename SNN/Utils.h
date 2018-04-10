@@ -35,7 +35,7 @@ template <std::size_t FILTER_SIZE>
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::ReadMNIST(int NumberOfImages, string imagesPath,
 	string labelsPath, array<unsigned char, FILTER_SIZE>* filter)
 {
-	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> arr = vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>(NumberOfImages);
+	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> arr = vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>(0);
 
 	std::ifstream images_file(imagesPath, std::ios::binary);
 	std::ifstream labels_file(labelsPath, std::ios::binary);
@@ -66,27 +66,32 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::ReadMNIST(i
 		{
 			unsigned char tmp = 0;
 			labels_file.read((char*)&tmp, sizeof(tmp));
-			arr[i].second = tmp;
 
-			if (filter != NULL && std::find(filter->begin(), filter->end(), tmp) == filter->end())
-				continue; //skip image if not in the filter
-
-			arr[i].first = array<unsigned char, NEURONS_IN>();
+			array<unsigned char, NEURONS_IN> imgdata{};
 			for (int r = 0; r < n_rows; ++r)
 			{
 				for (int c = 0; c < n_cols; ++c)
 				{
 					unsigned char temp = 0;
 					images_file.read(reinterpret_cast<char*>(&temp), sizeof(temp));
-					arr[i].first[(n_rows*r) + c] = temp;
+					imgdata[(n_rows*r) + c] = temp;
 				}
 			}
+
+			if (filter != NULL && std::find(filter->begin(), filter->end(), tmp) == filter->end())
+				continue; //skip image if not in the filter
+
+			//else add the pair to the vector
+			pair<array<unsigned char, NEURONS_IN>, unsigned char> entry{};
+			entry.first = imgdata;
+			entry.second = tmp;
+			arr.push_back(entry);
+
 		}
 		return arr;
 	}
-	else
-		throw Exception();
 }
+
 
 template <std::size_t FILTER_SIZE>
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTrainingData(int NumberOfImages,
@@ -95,7 +100,7 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTraining
 	auto data = ReadMNIST<FILTER_SIZE>(NumberOfImages, TRAIN_IMAGES_PATH, TRAIN_LABELS_PATH, filter);
 
 	//shuffle the array using Fisher–Yates algorithm
-	int i = NumberOfImages - 1;
+	int i = data.size() - 1;
 	int j;
 	pair<array<unsigned char, NEURONS_IN>, unsigned char> temp;
 	while (i > 0)

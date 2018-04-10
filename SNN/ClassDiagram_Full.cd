@@ -1,49 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="DatabaseOps">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="5.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DatabaseOps.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Utils">
-    <Position X="6.5" Y="0.5" Width="1.75" />
+    <Position X="6.5" Y="0.5" Width="6.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAEAAAAAQAQAAAAIAADAAAAIAAAAQAACAQAAA=</HashCode>
       <FileName>Utils.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TrainingPool">
-    <Position X="2.5" Y="0.5" Width="1.5" />
+    <Position X="2.5" Y="0.5" Width="5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAACAAAAAgAAAAAAAABAAAAAAAAAAAAAAABAAA=</HashCode>
       <FileName>TrainingPool.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Network">
-    <Position X="4.75" Y="0.5" Width="1.5" />
+    <Position X="0.75" Y="5.5" Width="8" />
     <TypeIdentifier>
       <HashCode>AAAhAAAAAACCAAAABAAIAAAAAAABAAAAAAAEAAQBAAI=</HashCode>
       <FileName>Network.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MatrixOps">
-    <Position X="2.5" Y="2.75" Width="2" />
+    <Position X="2.5" Y="2.75" Width="7.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAgAAAAAQAAAAAABAAQACAAAAAAAAAAAAAgAAAQ=</HashCode>
       <FileName>MatrixOps.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="InputLayer">
-    <Position X="0.5" Y="2.25" Width="1.5" />
+    <Position X="0.5" Y="2.25" Width="4.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAMAAAAAAAAAAAgAAAAQAAAEAAAAEQAAABAAA=</HashCode>
       <FileName>Layer.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OutputLayer">
-    <Position X="8.5" Y="0.5" Width="1.5" />
+    <Position X="8.5" Y="0.5" Width="5" />
     <TypeIdentifier>
       <HashCode>AAEIAAEAAAAABAgAIgAAgAAAAAAAAAAAAAIgACAAAAA=</HashCode>
       <FileName>Layer.h</FileName>
