@@ -56,6 +56,8 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
+		else
+			Utils::PrintLine("Expected " + std::to_string(trainingSet[i].second) + " but got " + std::to_string(res));
 	}
 
 	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");

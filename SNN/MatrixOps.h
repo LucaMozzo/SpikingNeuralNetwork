@@ -3,28 +3,70 @@
 
 using std::array;
 
+/**
+This class contains custom matrix operations
+*/
 class MatrixOps
 {
 public:
-	//Performs a reduced convolution to aggregate the trains and alpha
+	/**
+	Performs a partial convolution to aggregate the trains and alpha
+	@param f The spike train
+	@param g The weights vector
+	@returns The result of the convolution
+	*/
 	static array<double, T-1> Conv(array<bool,T> const &f, array<double,TYI> const &g);
-	//static array<double> SumColumns(array<array<double>>& vect);
-	static array<double, T-1> SumColumnsMod(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl);
-
-	//multiply array by constant
+	/**
+	Sum the matrix along the columns, but only every cl rows
+	@param vect The matrix
+	@param cl The frequency of rows to be summed, i.e. cl=2 half of the rows are summed
+	@return The sum
+	*/
+	static array<double, T-1> SumColumns(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl);
+	/**
+	Multiplies an array by a constant
+	@param SIZE The length of the array
+	@param c The constant
+	@param vect The array
+	*/
 	template<std::size_t SIZE>
-	static void
-	Multiply(double c, array<double, SIZE>& vect);
-	
+	static void Multiply(double c, array<double, SIZE>& vect);
+	/**
+	Performs the dot product
+	@param ROWS The number of rows
+	@param COLS The number of columns
+	@param basis The basis matrix
+	@param weight The weight vector
+	@returns the result of the operation
+	*/
 	template<std::size_t ROWS, std::size_t COLS>
 	static array<double, ROWS> Dot(array<array<double, COLS>, ROWS>& basis, array<double, COLS>& weight);
-
+	/**
+	Sums all the values in a vector
+	@param SIZE The length of the array
+	@param ROWS The number of rows
+	@param COLS The number of columns
+	@param vect The vector
+	@return The sum of the elements
+	*/
 	template<std::size_t SIZE>
 	static double Sum(const array<double, SIZE>& vect);
-
+	/**
+	Performs a matrix transpose
+	@param ROWS The number of rows
+	@param COLS The number of columns
+	@param input The input matrix
+	@return The transposed matrix
+	*/
 	template<std::size_t ROWS, std::size_t COLS>
 	static array<array<double, ROWS>, COLS> Transpose(array<array<double, COLS>, ROWS>& input);
-
+	/**
+	Performs element-wise sum of the elements in the arrays
+	@param SIZE The length of the arrays
+	@param a Array 1
+	@param b Array 2
+	@return The element-wise sum of the arrays
+	*/
 	template<std::size_t SIZE>
 	static array<double, SIZE> SumArrays(array<double, SIZE> a, array<double, SIZE> b);
 };
