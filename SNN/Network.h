@@ -47,14 +47,17 @@ void Network::Train(short epochs, int trainingImages,
 		}
 	else
 	{
-		for (auto& img : *trainingData)
+		for (short epoch = 0; epoch < epochs; ++epoch)
 		{
-			Run(img.first);
-			auto errors = outputLayer.ComputeErrors(img.second);
-			inputLayer.UpdateAlphas(errors);
+			for (auto& img : *trainingData)
+			{
+				Run(img.first);
+				auto errors = outputLayer.ComputeErrors(img.second);
+				inputLayer.UpdateAlphas(errors);
 
-			outputLayer.UpdateBetas(errors);
-			outputLayer.UpdateGammas(errors);
+				outputLayer.UpdateBetas(errors);
+				outputLayer.UpdateGammas(errors);
+			}
 		}
 	}
 }

@@ -64,8 +64,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 					trainWindow[index++] = 0;
 				else 
 				{
-					trainWindow[index] = trains[j][i];
-					++index;
+					trainWindow[index++] = trains[j][i];
 				}
 			}
 

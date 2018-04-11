@@ -21,7 +21,7 @@ const short TYO = 2;
 // number of beta bases
 const short Kb = TYO;
 // learning rate
-const float LEARNING_RATE =  0.00005;
+const float LEARNING_RATE =  0.5;
 // range of probabilities for spike decoding
 const std::pair<float, float> P_RANGE = { 0, 0.5 };
 
