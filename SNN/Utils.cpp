@@ -13,7 +13,7 @@ std::mutex Utils::lock;
 
 float Utils::RaisedCosine(int time, int mean, float stddev)
 {
-	return 0.5 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
+	return 0.45 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
 }
 
 array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
