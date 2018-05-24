@@ -6,12 +6,12 @@
 #include <thread>
 
 using std::string;
+using std::vector;
 
 Network::Network()
 {
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
-	middleLayer = HiddenLayer();
 }
 
 char Network::Run(array<unsigned char, NEURONS_IN> image)
@@ -19,7 +19,6 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
 	outputLayer.Reset();
-	middleLayer.Reset();
 
 	// 2. Generate the spikes in the input layer
 	auto probs = Utils::RateEncode(image);
@@ -32,53 +31,10 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
-	middleLayer.ComputeOutput(preProcessedTrains);
-	auto preProcessedTrains2 = middleLayer.ApplyAlphas();
-	outputLayer.ComputeOutput(preProcessedTrains2);
+	outputLayer.ComputeOutput(preProcessedTrains);
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();
-}
-
-void Network::Train(short epochs, int trainingImages, vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData, bool validateAfterEpoch)
-{
-	if(!trainingData)
-		for (short epoch = 0; epoch < epochs; ++epoch)
-		{
-			Utils::PrintLine("Iteration " + std::to_string(epoch));
-			auto data = Utils::GetTrainingData(trainingImages);
-
-			for (int i = 0; i < trainingImages; ++i)
-			{
-				Run(data[i].first);
-				auto errors = outputLayer.ComputeErrors(data[i].second);
-				middleLayer.UpdateAlphas(errors);
-				middleLayer.UpdateBetas(errors);
-				middleLayer.UpdateGammas(errors);
-				inputLayer.UpdateAlphas(errors, middleLayer.B);
-
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
-			}
-
-			if (validateAfterEpoch)
-				Validate();
-		}
-	else
-	{
-		for (auto& img : *trainingData)
-		{
-			Run(img.first);
-			auto errors = outputLayer.ComputeErrors(img.second);
-			middleLayer.UpdateAlphas(errors);
-			middleLayer.UpdateBetas(errors);
-			middleLayer.UpdateGammas(errors);
-			inputLayer.UpdateAlphas(errors, middleLayer.B);
-
-			outputLayer.UpdateBetas(errors);
-			outputLayer.UpdateGammas(errors);
-		}
-	}
 }
 
 void Network::ImportData(string fileName)
@@ -91,35 +47,27 @@ void Network::ExportData(string fileName)
 	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
 }
 
-int Network::Validate(short testImages)
-{
-	if (testImages > 10000 || testImages <= 0)
-		return 0;
-
-	auto d = Utils::GetTestData(testImages);
-
-	return ValidateDataset(d);
-}
-
 int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
 {
-	short correct = 0;
+	int correct = 0;
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
 		const auto res = Run(trainingSet[i].first);
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
+		/*else
+			Utils::PrintLine("Expected " + std::to_string(trainingSet[i].second) + " but got " + std::to_string(res));*/
 	}
 
-	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly");
+	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");
 
 	return correct;
 }
 
 int Network::CrossValidate()
 {
-	auto data = Utils::GetTrainingData(60000);
+	auto data = Utils::GetTrainingData<0>(60000);
 	int sum = 0;
 
 	vector<vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>> folds{};
@@ -145,7 +93,7 @@ int Network::CrossValidate()
 
 		//train and validate
 		ResetNetwork();
-		Train(0,0,&trainingSet);
+		Train<0>(0,0,&trainingSet);
 		sum += ValidateDataset(folds[i]);
 	}
 
@@ -157,5 +105,4 @@ void Network::ResetNetwork()
 {
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
-	middleLayer = HiddenLayer();
 }

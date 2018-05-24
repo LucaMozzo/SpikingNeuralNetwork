@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DatabaseOps.h"
+#include "Utils.h"
 
 [[deprecated]]
 bool ExecuteNonQuery(sqlite3* db, const char* query)
@@ -22,9 +23,7 @@ bool ExecuteNonQuery(sqlite3* db, const char* query)
 void DatabaseOps::ExportData(InputLayer * inputLayer, OutputLayer * outputLayer, string fileName)
 {
 	/*
-	Generates a sqlite database at the specified path.
-
-	Tha database contains different tables:
+	The database contains different tables:
 
 	|-------------------------------------------------------------------------------------------------------------|
 	| LAYER                                                                                                       |
@@ -38,60 +37,60 @@ void DatabaseOps::ExportData(InputLayer * inputLayer, OutputLayer * outputLayer,
 	|-----------------------------------------------------------------------------|
 	| ID         | VALUE               | LAYERID                                  |
 	| unique id  | value of the weight | id of the layer where the weight belongs |
-	|-----------------------------------------------------------------------------|
-
-	*/
-
+	|-----------------------------------------------------------------------------|*/
 	//delete the file regardless if it exists or not
 	remove(fileName.c_str());
 
 	sqlite3* db;
+	char *error;
 	auto res = sqlite3_open(fileName.c_str(), &db);
 	if (res)
 		return; //failed to connect
 	
-	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &error);
 
 	//create tables
 	const char* query = "CREATE TABLE Layer (ID INTEGER PRIMARY KEY AUTOINCREMENT, `TYPE` INTEGER DEFAULT 0 NOT NULL," \
 		 "TY TINYINT NOT NULL, CHECK (TYPE >= 0 AND TYPE <= 2));";
 
-	sqlite3_exec(db, query, NULL, NULL, NULL);
+	sqlite3_exec(db, query, NULL, NULL, &error);
 
 	query = "CREATE TABLE Weight (ID INTEGER PRIMARY KEY AUTOINCREMENT, `VALUE` DOUBLE NULL DEFAULT NULL, LAYERID INTEGER," \
 		" FOREIGN KEY (LAYERID) REFERENCES Layer(ID));";
 
-	sqlite3_exec(db, query, NULL, NULL, NULL);
-	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(db, query, NULL, NULL, &error);
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, &error);
 
 	//insert the data
-	query = ("INSERT INTO Layer (`TYPE`, TY) VALUES(0, " + std::to_string(TYI) + ")").c_str();
-	sqlite3_exec(db, query, NULL, NULL, NULL);
-	query = ("INSERT INTO Layer (`TYPE`, TY) VALUES(2, " + std::to_string(TYO) + ")").c_str();
-	sqlite3_exec(db, query, NULL, NULL, NULL);
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &error);
+	string str = "INSERT INTO Layer (`TYPE`, TY) VALUES(0, " + std::to_string(TYI) + ");";
+	sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
+	str = "INSERT INTO Layer (`TYPE`, TY) VALUES(2, " + std::to_string(TYO) + ");";
+	sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, &error);
 
-	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-	for(auto& alpha : inputLayer->alphas)
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &error);
+	for(auto& alpha : inputLayer->w)
 		for(char i = 0; i < TYI; ++i)
 		{
-			query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(alpha[i]) + ", 1);").c_str();
-			sqlite3_exec(db, query, NULL, NULL, NULL);
+			str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(alpha[i]) + ", 1);";
+			sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
 		}
-	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, &error);
 
 	// beta and gamma
-	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &error);
 	for(char i = 0; i < CLASSES; ++i)
 	{
 		for(char j = 0; j < TYO; ++j)
 		{
-			query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->betas[i][j]) + ", 2);").c_str();
-			sqlite3_exec(db, query, NULL, NULL, NULL);
+			str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->v[i][j]) + ", 2);";
+			sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
 		}
-		query = ("INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->gammas[i]) + ", 2);").c_str();
-		sqlite3_exec(db, query, NULL, NULL, NULL);
+		str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->gammas[i]) + ", 2);";
+		sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
 	}
-	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, &error);
 
 	sqlite3_close(db);
 }
@@ -113,8 +112,11 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 	}
 	else
 	{
-		/*TYI = (short)results[5];
-		TYO = (short)results[8];*/
+		if (*results[5]-'0' != TYI || *results[8]-'0' != TYO) 
+		{
+			Utils::PrintLine("The hyperparameters of the training you're trying to load do not match the constants for this network. Import skipped");
+			return;
+		}
 	}
 
 	// read alpha weights
@@ -135,7 +137,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 				alpha[j] = atof(results[i]);
 			}
 			i -= columns;
-			inputLayer->alphas[c++] = alpha;
+			inputLayer->w[c++] = alpha;
 		}
 	}
 
@@ -156,7 +158,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 			{
 				beta[j] = atof(results[i]);
 			}
-			outputLayer->betas[c] = beta;
+			outputLayer->v[c] = beta;
 			outputLayer->gammas[c++] = atof(results[i]);
 		}
 	}

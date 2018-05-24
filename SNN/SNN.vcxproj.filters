@@ -48,11 +48,11 @@
     <ClInclude Include="DatabaseOps.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="TrainingPool.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
