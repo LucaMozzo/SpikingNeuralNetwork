@@ -5,15 +5,15 @@
 InputLayer::InputLayer()
 {
 	trains = array<array<bool, T>, NEURONS_IN>();
-	alphas = array<array<double, TYI>, CLASSES*NEURONS_IN>();
+	w = array<array<double, TYI>, CLASSES*NEURONS_IN>();
 
-	//generate alphas randomly
+	//generate w randomly
 	for (int i = 0; i < CLASSES*NEURONS_IN; ++i)
 	{
-		alphas[i] = array<double, TYI>();
+		w[i] = array<double, TYI>();
 
 		for (int j = 0; j < TYI; ++j)
-			alphas[i][j] = (rand() % 10 + 1) / 10.0;
+			w[i][j] = (rand() % 10 + 1) / 10.0;
 	}
 
 	basis = Utils::GenerateAlphaBasis();
@@ -38,7 +38,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas()
 	{
 		if (c % CLASSES == 0 && c > 0)
 			++j;
-		result[c] = MatrixOps::Conv(trains[j], MatrixOps::Dot(basis, alphas[c]));
+		result[c] = MatrixOps::Conv(trains[j], MatrixOps::Dot(basis, w[c]));
 	}
 	return result;
 }
@@ -64,8 +64,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 					trainWindow[index++] = 0;
 				else 
 				{
-					trainWindow[i] = trains[j][i];
-					++index;
+					trainWindow[index++] = trains[j][i];
 				}
 			}
 
@@ -81,27 +80,27 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 		//apply it to every member of alpha
 		for (short t = 0; t < TYI; ++t)
 		{
-			alphas[c][t] += err[t];
+			w[c][t] += err[t];
 		}
 	}
 }
 
 OutputLayer::OutputLayer()
 {
-	betas = array<array<double, TYO>, CLASSES>();
+	v = array<array<double, TYO>, CLASSES>();
 	u = array<array<double, T>, CLASSES>();
 	y = array<array<bool, T>, CLASSES>();
 	gammas = array<double, CLASSES>();
 
 	//srand(time(NULL));
 
-	//generate betas and gammas randomly
+	//generate v and gammas randomly
 	for (int i = 0; i < 10; ++i)
 	{
-		betas[i] = array<double, TYO>();
+		v[i] = array<double, TYO>();
 
 		for (int j = 0; j < TYO; ++j)
-			betas[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
+			v[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
 		gammas[i] = (rand() % 10 + 1) / 10.0;;
 	}
 
@@ -125,14 +124,14 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		/*
 		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
 
-		therefore the alphas relevant to each output neuron are at rows % 10 where the reminder is the class
+		therefore the w relevant to each output neuron are at rows % 10 where the reminder is the class
 		e.g.
 		row 0 -> input neuron 0 to class 0
 		row 1 -> input neuron 0 to class 1
 		...
 		*/
 
-		auto alphas = MatrixOps::SumColumnsMod(synapsesOut, c);
+		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
 		//compute spiking
@@ -151,7 +150,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			for (short b = 0; b < TYO; ++b)
 			{
 				if (yIndex++ >= 0)
-					beta[b] = y[c][yIndex-1] * MatrixOps::Dot(basis, betas[c])[b];
+					beta[b] = y[c][yIndex-1] * MatrixOps::Dot(basis, v[c])[b];
 				else
 					beta[b] = 0;
 			}
@@ -223,7 +222,7 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 					trainWindow[index++] = 0;
 				else 
 				{
-					trainWindow[i] = y[c][i];
+					trainWindow[index] = y[c][i];
 					++index;
 				}
 			}
@@ -240,7 +239,7 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 		//apply it
 		for (short t = 0; t < TYO; ++t)
 		{
-			betas[c][t] += err[t];
+			v[c][t] += err[t];
 		}
 	}
 }

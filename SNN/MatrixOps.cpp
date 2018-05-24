@@ -18,26 +18,7 @@ array<double, T-1> MatrixOps::Conv(array<bool, T> const & f, array<double, TYI> 
 	return out;
 }
 
-/*array<double> MatrixOps::SumColumns(array<array<double>>& vect)
-{
-	array<double> tot = array<double>(vect[0].size());
-
-	for (int i = 0; i < vect[0].size(); ++i)
-	{
-		tot[i] = 0;
-		for (int j = 0; j < vect.size(); ++j)
-		{
-			tot[i] += vect[j][i];
-		}
-	}
-
-	return tot;
-}*/
-
-/*
- Sum the columns where the row's reminder is relevant
-*/
-array<double, T-1> MatrixOps::SumColumnsMod(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl)
+array<double, T-1> MatrixOps::SumColumns(array<array<double, T-1>, CLASSES*NEURONS_IN>& vect, const short cl)
 {
 	array<double, T-1> tot = array<double, T-1>();
 

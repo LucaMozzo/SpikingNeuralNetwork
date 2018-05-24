@@ -7,27 +7,81 @@ using std::vector;
 using std::string;
 using std::pair;
 
+/**
+This class contains general methods used in the programme
+*/
 class Utils 
 {
 private:
 
-	static std::mutex lock;
+	static std::mutex lock; /**< Multithreading lock */
+	/**
+	Raised cosine function implementation
+	@param time The x-value at which get the value
+	@param mean The x-value where the value should be the highest
+	@param stddev The standard deviation, i.e. distance from the mean where the numction is non-zero
+	@return the value at time t of the curve
+	*/
 	static float RaisedCosine(int time, int mean, float stddev);
 	static int ReverseInt(int i);
+	/**
+	Read from the MNIST database file
+	@param FILTER_SIZE The number of elements in the filter
+	@param NumberOfImages Number of images to read from the database
+	@param imagesPath Path of the image database
+	@param labelsPath Path of the labels database
+	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@return The a list of <image, label> pairs
+	*/
 	template<std::size_t FILTER_SIZE>
 	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> ReadMNIST(int NumberOfImages, string imagesPath, string labelsPath, array<unsigned char, FILTER_SIZE>* filter);
 
 public:
 
+	/**
+	Perform rate encode on the pixels of the image
+	@param image The input image
+	@return An array of probabilities of spiking
+	*/
 	static array<float, NEURONS_IN> RateEncode(array<unsigned char, NEURONS_IN>& image);
+	/**
+	Generate spikes trains from probabilities
+	@param probability The probability of spiking
+	@return The train of spikes
+	*/
 	static array<bool, T> GenerateSpikes(float probability);
+	/**
+	Returns the training data
+	@param FILTER_SIZE The number of elements in the filter
+	@param NumberOfImages Number of images to read from the database
+	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@return The a list of <image, label> pairs
+	*/
 	template<std::size_t FILTER_SIZE>
 	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTrainingData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter=nullptr);
+	/**
+	Returns the test data
+	@param FILTER_SIZE The number of elements in the filter
+	@param NumberOfImages Number of images to read from the database
+	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@return The a list of <image, label> pairs
+	*/
 	template<std::size_t FILTER_SIZE>
 	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTestData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter=nullptr);
-	static array<float, T> GenerateBasisMatrix(short meanOffset);
+	/**
+	Generates the basis matrix A
+	@returns The basis matrix A
+	*/
 	static array<array<double, Ka>, TYI> GenerateAlphaBasis();
+	/**
+	Generates the basis matrix B
+	@returns The basis matrix B
+	*/
 	static array<array<double, Kb>, TYO> GenerateBetaBasis();
+	/**
+	Thread-safe method for printing to terminal
+	@param str The string to be printed to terminal
+	*/
 	static void PrintLine(string&& str);
 };
 
