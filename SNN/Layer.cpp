@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Layer.h"
 #include "Utils.h"
+#include <algorithm>
 
 InputLayer::InputLayer()
 {
@@ -43,74 +44,39 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas()
 	return result;
 }
 
-void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
+void InputLayer::UpdateAlphas(array<array<double, TYI>, CLASSES*NEURONS_IN>& gradients)
 {
-	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
 	{
-		if (c % CLASSES == 0 && c > 0)
-			++j;
-
-		//compute error
-		//double tot = 0;
-		array<double, TYI> err{};
-		for (short t = 0; t < T; ++t)
-		{
-			array<double, TYI> trainWindow{ };
-			short index = 0;
-			for(short i = t-1; i > t-TYI; --i)
-			{
-				if (i < 0)
-					trainWindow[index++] = 0;
-				else 
-				{
-					trainWindow[index++] = trains[j][i];
-				}
-			}
-
-			auto basisT = MatrixOps::Transpose(basis);
-			auto tmp = MatrixOps::Dot(basisT, trainWindow);
-			MatrixOps::Multiply(errors[c%10][t], tmp);
-			err = MatrixOps::SumArrays(err, tmp);
-		}
-
-		MatrixOps::Multiply(LEARNING_RATE, err);
-
-		
-		//apply it to every member of alpha
+		//apply it to every member of w
 		for (short t = 0; t < TYI; ++t)
 		{
-			w[c][t] += err[t];
+			w[c][t] += gradients[c][t];
 		}
 	}
 }
 
 OutputLayer::OutputLayer()
 {
-	v = array<array<double, TYO>, CLASSES>();
 	u = array<array<double, T>, CLASSES>();
 	y = array<array<bool, T>, CLASSES>();
+	q = array<double, T>();
+	h = array<double, T>();
 	gammas = array<double, CLASSES>();
-
-	//srand(time(NULL));
 
 	//generate v and gammas randomly
 	for (int i = 0; i < 10; ++i)
 	{
-		v[i] = array<double, TYO>();
-
-		for (int j = 0; j < TYO; ++j)
-			v[i][j] = (rand() % 10 + 1) / 10.0; //0.02 to 0.2
 		gammas[i] = (rand() % 10 + 1) / 10.0;;
 	}
-
-	basis = Utils::GenerateBetaBasis();
 }
 
 void OutputLayer::Reset()
 {
 	u = array<array<double, T>, CLASSES>();
 	y = array<array<bool, T>, CLASSES>();
+	q = array<double, T>();
+	h = array<double, T>();
 }
 
 void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
@@ -145,18 +111,8 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 
 		for (short t = 1; t < T; ++t)
 		{
-			array<double, TYO> beta = array<double, TYO>();
-			short yIndex = t - TYO;
-			for (short b = 0; b < TYO; ++b)
-			{
-				if (yIndex++ >= 0)
-					beta[b] = y[c][yIndex-1] * MatrixOps::Dot(basis, v[c])[b];
-				else
-					beta[b] = 0;
-			}
-
 			// sum together alpha, beta, gamma => potential
-			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
+			u[c][t] = gammas[c] + alphas[t-1];
 
 			//compute spiking
 			probability = g(u[c][t]);
@@ -170,85 +126,145 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 	}
 }
 
-array<array<double, T>, CLASSES> OutputLayer::ComputeErrors(unsigned char label) const
-{
-	array<array<double, T>, CLASSES> diffs = array<array<double, T>, CLASSES>();
-	for (short c = 0; c < CLASSES; ++c)
-	{
-		array<double, T> diff = array<double, T>();
-		for (short t = 0; t < T; ++t)
-		{
-			diff[t] = (label == c ? 1 : 0) - g(u[c][t]);
-		}
-		diffs[c] = diff;
-	}
-	return diffs;
-}
-
 char OutputLayer::ComputeWinner() const
 {
-	char bestIndex = 0;
-	char bestSpikes = 0;
-
-	for (short i = 0; i < CLASSES; ++i) 
+	for (short t = 0; t < T; ++t) 
 	{
-		char currentSpikes = 0;
-		for (short t = 0; t < T; ++t)
-			currentSpikes += y[i][t];
-
-		if (currentSpikes > bestSpikes) 
-		{
-			bestSpikes = currentSpikes;
-			bestIndex = i;
-		}
+		for (short i = 0; i < CLASSES; ++i)
+			if (y[i][t] == 1)
+				return i;
 	}
-
-	return bestIndex;
+	return 0; //no spike
 }
 
-void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
+array<double, T> OutputLayer::FTSProbability(char label)
 {
-	for (short c = 0; c < CLASSES; ++c)
+	auto probabilities = array<double, T>();
+
+	for (short t = 0; t < T; ++t) 
 	{
-		//compute error
-		array<double, TYO> err{};
+		double prob = 0;
+		for (int i = 0; i < CLASSES; ++i)
+		{
+			//skip the correct class
+			if (i == label)
+				continue;
+
+			for (short t1 = 0; t1 < t; ++t1)
+			{
+				for (short t2 = 0; t2 < t - 1; ++t2)
+				{
+					if(prob == 0)
+						prob = (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
+					else
+						prob *= (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
+				}
+			}
+		}
+
+		probabilities[t] = prob;
+	}
+
+	return probabilities;
+}
+
+void OutputLayer::ComputeQ(char label)
+{
+	auto p = FTSProbability(label);
+	auto psum = MatrixOps::Sum<T>(p);
+	
+	for(short t = 0; t < T; ++t)
+	{
+		q[t] = p[t] / psum;
+	}
+}
+
+void OutputLayer::ComputeH(char label)
+{
+	for(short t = 0; t < T; ++t)
+	{
+		double sum = 0;
+		for (short t1 = 0; t1 < t; ++t1)
+			sum += q[t1];
+
+		h[t] = 1 - sum;
+	}
+}
+
+array<array<double, TYI>, CLASSES*NEURONS_IN> OutputLayer::GradientW(char label, array<array<bool, T>, NEURONS_IN>& x, array<array<double, Ka>, TYI>& basis)
+{
+	auto gradients = array<array<double, TYI>, CLASSES*NEURONS_IN>();
+	auto basisTranspose = MatrixOps::Transpose(basis);
+
+	int trainIndex = 0;
+	for (short j = 0; j < CLASSES*NEURONS_IN; ++j)
+	{
+		if (j % 10 == 0 && j > 0)
+			++trainIndex;
+
+		array<double, TYI> sum;
+
+		//initalize with 0s
+		for (short t = 0; t < TYI; ++t)
+			sum[t] = 0;
+
 		for (short t = 0; t < T; ++t)
 		{
-			array<double, TYO> trainWindow{};
+			//compute the window to be considered
+			array<double, TYI> trainWindow{};
 			short index = 0;
-			for (short i = t - TYI; i < t - 1 ; ++i)
+			for (short i = t - 1; i > t - TYI; --i)
 			{
 				if (i < 0)
 					trainWindow[index++] = 0;
-				else 
+				else
 				{
-					trainWindow[index] = y[c][i];
-					++index;
+					trainWindow[index++] = x[trainIndex][i];
 				}
 			}
 
-			auto basisT = MatrixOps::Transpose(basis);
-			auto tmp = MatrixOps::Dot(basisT, trainWindow);
-			MatrixOps::Multiply(errors[c][t], tmp);
-			err = MatrixOps::SumArrays(err, tmp);
+			auto dotProd = MatrixOps::Dot(basisTranspose, trainWindow);
+
+			//check the two cases
+			if (j == label)
+				//if the current output neuron = the label
+				MatrixOps::Multiply(h[t] * g(u[j%10][t]) - q[t], dotProd);	
+			else
+				MatrixOps::Multiply(h[t] * g(u[j%10][t]), dotProd);
+			MatrixOps::SumArrays(sum, dotProd);
 		}
-
-		MatrixOps::Multiply(LEARNING_RATE, err);
-
-
-		//apply it
-		for (short t = 0; t < TYO; ++t)
-		{
-			v[c][t] += err[t];
-		}
+		MatrixOps::Multiply(-1, sum);
+		gradients[j] = sum;
 	}
+
+	return gradients;
 }
 
-void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
+array<double, CLASSES> OutputLayer::GradientGamma(char label)
+{
+	auto gradients = array<double, CLASSES>();
+
+	for(short i = 0; i < CLASSES; ++i)
+	{
+		double sum = 0;
+		for (short t = 0; t < T; ++t) 
+		{
+			if (i == label)
+				//if the current output neuron = the label
+				sum += h[t] * g(u[i][t]) - q[t];
+			else
+				sum += h[t] * g(u[i][t]);
+		}
+		gradients[i] = -sum;
+	}
+
+	return gradients;
+}
+
+void OutputLayer::UpdateGammas(array<double, CLASSES>& gradients)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
-		auto sum = MatrixOps::Sum(errors[c]);
-		gammas[c] += LEARNING_RATE * sum;
+		gammas[c] += LEARNING_RATE * gradients[c];
 	}
 }
