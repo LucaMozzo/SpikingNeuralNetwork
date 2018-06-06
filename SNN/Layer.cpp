@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Layer.h"
 #include "Utils.h"
-#include <algorithm>
+#include <cmath>
 
 InputLayer::InputLayer()
 {
@@ -14,7 +14,7 @@ InputLayer::InputLayer()
 		w[i] = array<double, TYI>();
 
 		for (int j = 0; j < TYI; ++j)
-			w[i][j] = (rand() % 10 + 1) / 10.0;
+			w[i][j] = (rand() % 10 - 5) / 5.0;
 	}
 
 	basis = Utils::GenerateAlphaBasis();
@@ -100,7 +100,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
-		//compute spiking
+							 //compute spiking
 		double probability = g(u[c][0]);
 		probability = probability * 10000;
 
@@ -112,7 +112,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		for (short t = 1; t < T; ++t)
 		{
 			// sum together alpha, beta, gamma => potential
-			u[c][t] = gammas[c] + alphas[t-1];
+			u[c][t] = gammas[c] + alphas[t - 1];
 
 			//compute spiking
 			probability = g(u[c][t]);
@@ -124,6 +124,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				y[c][t] = 0;
 		}
 	}
+
 }
 
 char OutputLayer::ComputeWinner() const
@@ -144,19 +145,25 @@ array<double, T> OutputLayer::FTSProbability(char label)
 	for (short t = 0; t < T; ++t) 
 	{
 		double prob = 0;
+		bool flag = true;
 		for (int i = 0; i < CLASSES; ++i)
 		{
 			//skip the correct class
 			if (i == label)
 				continue;
 
-			for (short t1 = 0; t1 < t; ++t1)
+			for (short t1 = 0; t1 <= t; ++t1)
 			{
-				for (short t2 = 0; t2 < t - 1; ++t2)
+				for (short t2 = 0; t2 <= t - 1; ++t2)
 				{
-					if(prob == 0)
+					if (flag) 
+					{
+						//prob = log(1 - g(u[i][t1])) + log(g(u[label][t])) + log(1 - g(u[label][t2]));
 						prob = (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
+						flag = !flag;
+					}
 					else
+						//prob += log(1 - g(u[i][t1])) + log(g(u[label][t])) + log(1 - g(u[label][t2]));
 						prob *= (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
 				}
 			}
@@ -170,10 +177,31 @@ array<double, T> OutputLayer::FTSProbability(char label)
 
 void OutputLayer::ComputeQ(char label)
 {
-	auto p = FTSProbability(label);
-	auto psum = MatrixOps::Sum<T>(p);
+	/*auto p = FTSProbability(label);
+	double minProb = INT_MAX;
+	//find minimum ln(pt)
+	for (auto probability : p)
+		if (log(probability) < minProb)
+			minProb = log(probability);
+	
+	//normalize the terms and compute the sum
+	double psum = 0;
+	for (auto& probability : p) 
+	{
+		probability = log(probability) - minProb;
+		psum += exp(probability);
+	}
 	
 	for(short t = 0; t < T; ++t)
+	{
+		q[t] = exp(p[t]) / psum;
+	}*/
+	auto p = FTSProbability(label);
+
+	auto psum = MatrixOps::Sum<T>(p);
+
+
+	for (short t = 0; t < T; ++t)
 	{
 		q[t] = p[t] / psum;
 	}
@@ -184,7 +212,7 @@ void OutputLayer::ComputeH(char label)
 	for(short t = 0; t < T; ++t)
 	{
 		double sum = 0;
-		for (short t1 = 0; t1 < t; ++t1)
+		for (short t1 = 0; t1 <= t; ++t1)
 			sum += q[t1];
 
 		h[t] = 1 - sum;
@@ -226,12 +254,12 @@ array<array<double, TYI>, CLASSES*NEURONS_IN> OutputLayer::GradientW(char label,
 			auto dotProd = MatrixOps::Dot(basisTranspose, trainWindow);
 
 			//check the two cases
-			if (j == label)
+			if (j%10 == label)
 				//if the current output neuron = the label
 				MatrixOps::Multiply(h[t] * g(u[j%10][t]) - q[t], dotProd);	
 			else
 				MatrixOps::Multiply(h[t] * g(u[j%10][t]), dotProd);
-			MatrixOps::SumArrays(sum, dotProd);
+			sum = MatrixOps::SumArrays(sum, dotProd);
 		}
 		MatrixOps::Multiply(-1, sum);
 		gradients[j] = sum;
