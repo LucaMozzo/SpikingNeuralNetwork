@@ -1,0 +1,113 @@
+\hypertarget{class_input_layer}{}\section{Input\+Layer Class Reference}
+\label{class_input_layer}\index{Input\+Layer@{Input\+Layer}}
+
+
+{\ttfamily \#include $<$Layer.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_input_layer_adac148f0626b911f30fd2396b8eb925a}{Input\+Layer}} ()
+\item 
+void \mbox{\hyperlink{class_input_layer_aadd73c016c015a4d9a5a9d39cb16c972}{Add\+Train}} (array$<$ bool, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}} $>$ \&train)
+\item 
+void \mbox{\hyperlink{class_input_layer_a1959584bdc493411f3f2ed4648636e26}{Reset\+Trains}} ()
+\item 
+array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}}-\/1 $>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}} $\ast$\mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}} $>$ \mbox{\hyperlink{class_input_layer_a4bbcf9d128d6552c65fb3f9a2cc5d1c7}{Apply\+Alphas}} ()
+\item 
+void \mbox{\hyperlink{class_input_layer_ade39f022f70cab37b342e34ac18b8baf}{Update\+Alphas}} (array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}} $>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}} $>$ \&errors)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a45bcfb91788c7d66f5de11604fb1eb6e}{T\+YI}} $>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}} $\ast$\mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}} $>$ \mbox{\hyperlink{class_input_layer_a89903c767c8ba1ef611feeaa65f9a0d1}{w}}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+array$<$ array$<$ bool, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}} $>$, \mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}} $>$ \mbox{\hyperlink{class_input_layer_abeb3e6442518a3025ed23c048d452055}{trains}}
+\item 
+array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a63d387da07d2165955fa3ed13918bb31}{Ka}} $>$, \mbox{\hyperlink{_constants_8h_a45bcfb91788c7d66f5de11604fb1eb6e}{T\+YI}} $>$ \mbox{\hyperlink{class_input_layer_a388d91869f6d433d8c8a74bf5a0ece24}{basis}}
+\item 
+short \mbox{\hyperlink{class_input_layer_af30abc59c541b1dcc0db0f4ca3072f1d}{index}} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class represents an input layer in the neural network and contains all the methods to perform operations on it 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_input_layer_adac148f0626b911f30fd2396b8eb925a}\label{class_input_layer_adac148f0626b911f30fd2396b8eb925a}} 
+\index{Input\+Layer@{Input\+Layer}!Input\+Layer@{Input\+Layer}}
+\index{Input\+Layer@{Input\+Layer}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{Input\+Layer()}{InputLayer()}}
+{\footnotesize\ttfamily Input\+Layer\+::\+Input\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+The cosntructor initialises the values of the weights and the basis matrix 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_input_layer_aadd73c016c015a4d9a5a9d39cb16c972}\label{class_input_layer_aadd73c016c015a4d9a5a9d39cb16c972}} 
+\index{Input\+Layer@{Input\+Layer}!Add\+Train@{Add\+Train}}
+\index{Add\+Train@{Add\+Train}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{Add\+Train()}{AddTrain()}}
+{\footnotesize\ttfamily void Input\+Layer\+::\+Add\+Train (\begin{DoxyParamCaption}\item[{array$<$ bool, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}} $>$ \&}]{train }\end{DoxyParamCaption})}
+
+Adds a train of spikes to the array, as position \mbox{[}index\mbox{]} 
+\begin{DoxyParams}{Parameters}
+{\em train} & The train of spikes \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_input_layer_a4bbcf9d128d6552c65fb3f9a2cc5d1c7}\label{class_input_layer_a4bbcf9d128d6552c65fb3f9a2cc5d1c7}} 
+\index{Input\+Layer@{Input\+Layer}!Apply\+Alphas@{Apply\+Alphas}}
+\index{Apply\+Alphas@{Apply\+Alphas}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{Apply\+Alphas()}{ApplyAlphas()}}
+{\footnotesize\ttfamily array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}}-\/1 $>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}} $\ast$\mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}} $>$ Input\+Layer\+::\+Apply\+Alphas (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Convolve alphas with the trains and apply the basis matrix. This is one part of the process to compute the potential of the output neuron \begin{DoxyReturn}{Returns}
+The preprocessed spike trains 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_input_layer_a1959584bdc493411f3f2ed4648636e26}\label{class_input_layer_a1959584bdc493411f3f2ed4648636e26}} 
+\index{Input\+Layer@{Input\+Layer}!Reset\+Trains@{Reset\+Trains}}
+\index{Reset\+Trains@{Reset\+Trains}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{Reset\+Trains()}{ResetTrains()}}
+{\footnotesize\ttfamily void Input\+Layer\+::\+Reset\+Trains (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Reset the values of the trains and index \mbox{\Hypertarget{class_input_layer_ade39f022f70cab37b342e34ac18b8baf}\label{class_input_layer_ade39f022f70cab37b342e34ac18b8baf}} 
+\index{Input\+Layer@{Input\+Layer}!Update\+Alphas@{Update\+Alphas}}
+\index{Update\+Alphas@{Update\+Alphas}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{Update\+Alphas()}{UpdateAlphas()}}
+{\footnotesize\ttfamily void Input\+Layer\+::\+Update\+Alphas (\begin{DoxyParamCaption}\item[{array$<$ array$<$ double, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}} $>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}} $>$ \&}]{errors }\end{DoxyParamCaption})}
+
+Updates the weights w using the errors  errors The errors for updating the weights 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_input_layer_a388d91869f6d433d8c8a74bf5a0ece24}\label{class_input_layer_a388d91869f6d433d8c8a74bf5a0ece24}} 
+\index{Input\+Layer@{Input\+Layer}!basis@{basis}}
+\index{basis@{basis}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{basis}{basis}}
+{\footnotesize\ttfamily array$<$array$<$double, \mbox{\hyperlink{_constants_8h_a63d387da07d2165955fa3ed13918bb31}{Ka}}$>$, \mbox{\hyperlink{_constants_8h_a45bcfb91788c7d66f5de11604fb1eb6e}{T\+YI}}$>$ Input\+Layer\+::basis\hspace{0.3cm}{\ttfamily [protected]}}
+
+The basis matrix A contains the basis functions to apply to the weights w \mbox{\Hypertarget{class_input_layer_af30abc59c541b1dcc0db0f4ca3072f1d}\label{class_input_layer_af30abc59c541b1dcc0db0f4ca3072f1d}} 
+\index{Input\+Layer@{Input\+Layer}!index@{index}}
+\index{index@{index}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{index}{index}}
+{\footnotesize\ttfamily short Input\+Layer\+::index = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+Index of next train in the array \mbox{\Hypertarget{class_input_layer_abeb3e6442518a3025ed23c048d452055}\label{class_input_layer_abeb3e6442518a3025ed23c048d452055}} 
+\index{Input\+Layer@{Input\+Layer}!trains@{trains}}
+\index{trains@{trains}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{trains}{trains}}
+{\footnotesize\ttfamily array$<$array$<$bool, \mbox{\hyperlink{_constants_8h_a6108cec236ef7a2e1d3259931de87186}{T}}$>$, \mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}}$>$ Input\+Layer\+::trains\hspace{0.3cm}{\ttfamily [protected]}}
+
+The trains of spikes generated by rate encoding process \mbox{\Hypertarget{class_input_layer_a89903c767c8ba1ef611feeaa65f9a0d1}\label{class_input_layer_a89903c767c8ba1ef611feeaa65f9a0d1}} 
+\index{Input\+Layer@{Input\+Layer}!w@{w}}
+\index{w@{w}!Input\+Layer@{Input\+Layer}}
+\subsubsection{\texorpdfstring{w}{w}}
+{\footnotesize\ttfamily array$<$array$<$double, \mbox{\hyperlink{_constants_8h_a45bcfb91788c7d66f5de11604fb1eb6e}{T\+YI}}$>$, \mbox{\hyperlink{_constants_8h_a12148c0e36153a905f4f6ef1afdbb27e}{C\+L\+A\+S\+S\+ES}}$\ast$\mbox{\hyperlink{_constants_8h_aefc2426e4681da445c7793c98a83c532}{N\+E\+U\+R\+O\+N\+S\+\_\+\+IN}}$>$ Input\+Layer\+::w}
+
+The weights w for every synapse 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Layer.\+h\item 
+Layer.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,55 @@
+\hypertarget{class_database_ops}{}\section{Database\+Ops Class Reference}
+\label{class_database_ops}\index{Database\+Ops@{Database\+Ops}}
+
+
+{\ttfamily \#include $<$Database\+Ops.\+h$>$}
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_database_ops_ad0ef679ce1c5887086df2677f32cbc22}{Export\+Data}} (\mbox{\hyperlink{class_input_layer}{Input\+Layer}} $\ast$input\+Layer, \mbox{\hyperlink{class_output_layer}{Output\+Layer}} $\ast$output\+Layer, string file\+Name)
+\item 
+static void \mbox{\hyperlink{class_database_ops_a0fafb6f340c8ab353e243a64d1775966}{Import\+Data}} (\mbox{\hyperlink{class_input_layer}{Input\+Layer}} $\ast$input\+Layer, \mbox{\hyperlink{class_output_layer}{Output\+Layer}} $\ast$output\+Layer, string file\+Name)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class contains methods to perform I/O operations on a S\+Q\+Lite 3 database 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_database_ops_ad0ef679ce1c5887086df2677f32cbc22}\label{class_database_ops_ad0ef679ce1c5887086df2677f32cbc22}} 
+\index{Database\+Ops@{Database\+Ops}!Export\+Data@{Export\+Data}}
+\index{Export\+Data@{Export\+Data}!Database\+Ops@{Database\+Ops}}
+\subsubsection{\texorpdfstring{Export\+Data()}{ExportData()}}
+{\footnotesize\ttfamily void Database\+Ops\+::\+Export\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_input_layer}{Input\+Layer}} $\ast$}]{input\+Layer,  }\item[{\mbox{\hyperlink{class_output_layer}{Output\+Layer}} $\ast$}]{output\+Layer,  }\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Generates a S\+Q\+Lite database at the specified path and exports all the weights and hyperparameters to it 
+\begin{DoxyParams}{Parameters}
+{\em input\+Layer} & The input layer \\
+\hline
+{\em output\+Layer} & The output layer \\
+\hline
+{\em file\+Name} & The output file name \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_database_ops_a0fafb6f340c8ab353e243a64d1775966}\label{class_database_ops_a0fafb6f340c8ab353e243a64d1775966}} 
+\index{Database\+Ops@{Database\+Ops}!Import\+Data@{Import\+Data}}
+\index{Import\+Data@{Import\+Data}!Database\+Ops@{Database\+Ops}}
+\subsubsection{\texorpdfstring{Import\+Data()}{ImportData()}}
+{\footnotesize\ttfamily void Database\+Ops\+::\+Import\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_input_layer}{Input\+Layer}} $\ast$}]{input\+Layer,  }\item[{\mbox{\hyperlink{class_output_layer}{Output\+Layer}} $\ast$}]{output\+Layer,  }\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Reads and imports the weights of the network from the specified S\+Q\+Lite database 
+\begin{DoxyParams}{Parameters}
+{\em input\+Layer} & The input layer \\
+\hline
+{\em output\+Layer} & The output layer \\
+\hline
+{\em file\+Name} & The input file name \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Database\+Ops.\+h\item 
+Database\+Ops.\+cpp\end{DoxyCompactItemize}

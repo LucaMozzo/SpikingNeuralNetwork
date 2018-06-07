@@ -10,8 +10,8 @@ using std::string;
 const short CLASSES = 10; /**< Number of classes*/
 const short NEURONS_IN = 784; /**< Number of input neurons*/
 
-const short T = 8; /**< Length of the spike train*/
-const short TYI = 3; /**< Length of short-term memory window in presynaptic phase*/
+const short T = 4; /**< Length of the spike train*/
+const short TYI = 4; /**< Length of short-term memory window in presynaptic phase*/
 const short Ka = TYI; /**< Number of alpha bases*/
 const short TYO = 2; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/

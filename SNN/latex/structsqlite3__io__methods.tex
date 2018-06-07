@@ -1,0 +1,67 @@
+\hypertarget{structsqlite3__io__methods}{}\section{sqlite3\+\_\+io\+\_\+methods Struct Reference}
+\label{structsqlite3__io__methods}\index{sqlite3\+\_\+io\+\_\+methods@{sqlite3\+\_\+io\+\_\+methods}}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ad1c72bdfde750a09a797f314a096a965}\label{structsqlite3__io__methods_ad1c72bdfde750a09a797f314a096a965}} 
+int {\bfseries i\+Version}
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ae0673b03bfa033d59188bfdab418cd26}\label{structsqlite3__io__methods_ae0673b03bfa033d59188bfdab418cd26}} 
+int($\ast$ {\bfseries x\+Close} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ac1433ffc0da0414a2a67a46d338d83eb}\label{structsqlite3__io__methods_ac1433ffc0da0414a2a67a46d338d83eb}} 
+int($\ast$ {\bfseries x\+Read} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, void $\ast$, int i\+Amt, sqlite3\+\_\+int64 i\+Ofst)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a659f6a40777b685c6a6b80e5f07a3328}\label{structsqlite3__io__methods_a659f6a40777b685c6a6b80e5f07a3328}} 
+int($\ast$ {\bfseries x\+Write} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, const void $\ast$, int i\+Amt, sqlite3\+\_\+int64 i\+Ofst)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_abe797948913bfe94d4fab7246773af50}\label{structsqlite3__io__methods_abe797948913bfe94d4fab7246773af50}} 
+int($\ast$ {\bfseries x\+Truncate} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, sqlite3\+\_\+int64 size)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ad4b78f6b0b475e621fe29fb1cc886437}\label{structsqlite3__io__methods_ad4b78f6b0b475e621fe29fb1cc886437}} 
+int($\ast$ {\bfseries x\+Sync} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int flags)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ae875f158de72435f40ca0bd5207d9862}\label{structsqlite3__io__methods_ae875f158de72435f40ca0bd5207d9862}} 
+int($\ast$ {\bfseries x\+File\+Size} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, sqlite3\+\_\+int64 $\ast$p\+Size)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_ac88793475b0c4188fb02c229f1a11e8b}\label{structsqlite3__io__methods_ac88793475b0c4188fb02c229f1a11e8b}} 
+int($\ast$ {\bfseries x\+Lock} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a5ce75a5ca2df9c1edcaef74d4c0d7e38}\label{structsqlite3__io__methods_a5ce75a5ca2df9c1edcaef74d4c0d7e38}} 
+int($\ast$ {\bfseries x\+Unlock} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a484752731e4a054c97497ad8d48a344b}\label{structsqlite3__io__methods_a484752731e4a054c97497ad8d48a344b}} 
+int($\ast$ {\bfseries x\+Check\+Reserved\+Lock} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int $\ast$p\+Res\+Out)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a913b12deb1dcae2c61b90776bcd9d19c}\label{structsqlite3__io__methods_a913b12deb1dcae2c61b90776bcd9d19c}} 
+int($\ast$ {\bfseries x\+File\+Control} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int op, void $\ast$p\+Arg)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a7a1c0cf3c4de6402a69f50e625be5ca2}\label{structsqlite3__io__methods_a7a1c0cf3c4de6402a69f50e625be5ca2}} 
+int($\ast$ {\bfseries x\+Sector\+Size} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_abbf1b4769c310bfee517af815eed93e9}\label{structsqlite3__io__methods_abbf1b4769c310bfee517af815eed93e9}} 
+int($\ast$ {\bfseries x\+Device\+Characteristics} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a2222efe012f210417f9881103014cdc5}\label{structsqlite3__io__methods_a2222efe012f210417f9881103014cdc5}} 
+int($\ast$ {\bfseries x\+Shm\+Map} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int i\+Pg, int pgsz, int, void volatile $\ast$$\ast$)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a2dbd4777e8ebce36b91dd5d64aef9bbf}\label{structsqlite3__io__methods_a2dbd4777e8ebce36b91dd5d64aef9bbf}} 
+int($\ast$ {\bfseries x\+Shm\+Lock} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int offset, int n, int flags)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_aa4e436fef318c4702940da870f8e2710}\label{structsqlite3__io__methods_aa4e436fef318c4702940da870f8e2710}} 
+void($\ast$ {\bfseries x\+Shm\+Barrier} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a494ae8bbfe91c38598c73aaa18f1848f}\label{structsqlite3__io__methods_a494ae8bbfe91c38598c73aaa18f1848f}} 
+int($\ast$ {\bfseries x\+Shm\+Unmap} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, int delete\+Flag)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_a71e611fc755d95ffbd3e7ecb8cb5fae6}\label{structsqlite3__io__methods_a71e611fc755d95ffbd3e7ecb8cb5fae6}} 
+int($\ast$ {\bfseries x\+Fetch} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, sqlite3\+\_\+int64 i\+Ofst, int i\+Amt, void $\ast$$\ast$pp)
+\item 
+\mbox{\Hypertarget{structsqlite3__io__methods_abebf1bbaa50bea56f0e37d0f66193bda}\label{structsqlite3__io__methods_abebf1bbaa50bea56f0e37d0f66193bda}} 
+int($\ast$ {\bfseries x\+Unfetch} )(\mbox{\hyperlink{structsqlite3__file}{sqlite3\+\_\+file}} $\ast$, sqlite3\+\_\+int64 i\+Ofst, void $\ast$p)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+sqlite3.\+h\end{DoxyCompactItemize}

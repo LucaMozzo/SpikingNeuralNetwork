@@ -79,8 +79,9 @@ void Network::Train(short epochs, int trainingImages,
 	if (!trainingData)
 		for (short epoch = 0; epoch < epochs; ++epoch)
 		{
-			Utils::PrintLine("Iteration " + std::to_string(epoch));
+			
 			auto data = Utils::GetTrainingData(trainingImages, filter);
+			Utils::PrintLine("Iteration " + std::to_string(epoch) + " (" + std::to_string(data.size()) + " images)");
 
 			for (int i = 0; i < data.size(); ++i)
 			{

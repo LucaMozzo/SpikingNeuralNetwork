@@ -14,7 +14,7 @@ InputLayer::InputLayer()
 		w[i] = array<double, TYI>();
 
 		for (int j = 0; j < TYI; ++j)
-			w[i][j] = (rand() % 10 - 5) / 5.0;
+			w[i][j] = (static_cast <double> (rand()) / (static_cast <double> (RAND_MAX / 2))) - 1;
 	}
 
 	basis = Utils::GenerateAlphaBasis();
@@ -51,7 +51,7 @@ void InputLayer::UpdateAlphas(array<array<double, TYI>, CLASSES*NEURONS_IN>& gra
 		//apply it to every member of w
 		for (short t = 0; t < TYI; ++t)
 		{
-			w[c][t] += gradients[c][t];
+			w[c][t] += LEARNING_RATE * gradients[c][t];
 		}
 	}
 }
@@ -67,7 +67,7 @@ OutputLayer::OutputLayer()
 	//generate v and gammas randomly
 	for (int i = 0; i < 10; ++i)
 	{
-		gammas[i] = (rand() % 10 + 1) / 10.0;;
+		gammas[i] = (static_cast <double> (rand()) / (static_cast <double> (RAND_MAX / 2))) - 1;
 	}
 }
 
@@ -154,17 +154,17 @@ array<double, T> OutputLayer::FTSProbability(char label)
 
 			for (short t1 = 0; t1 <= t; ++t1)
 			{
+				if (flag)
+				{
+					prob = (1 - g(u[i][t1])) * g(u[label][t]);
+					flag = !flag;
+				}
+				else
+					prob *= (1 - g(u[i][t1])) * g(u[label][t]);
+
 				for (short t2 = 0; t2 <= t - 1; ++t2)
 				{
-					if (flag) 
-					{
-						//prob = log(1 - g(u[i][t1])) + log(g(u[label][t])) + log(1 - g(u[label][t2]));
-						prob = (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
-						flag = !flag;
-					}
-					else
-						//prob += log(1 - g(u[i][t1])) + log(g(u[label][t])) + log(1 - g(u[label][t2]));
-						prob *= (1 - g(u[i][t1])) * g(u[label][t]) * (1 - g(u[label][t2]));
+					prob *= (1 - g(u[label][t2]));
 				}
 			}
 		}
@@ -209,13 +209,14 @@ void OutputLayer::ComputeQ(char label)
 
 void OutputLayer::ComputeH(char label)
 {
+	
 	for(short t = 0; t < T; ++t)
 	{
 		double sum = 0;
-		for (short t1 = 0; t1 <= t; ++t1)
+		for(short t1 = t; t1 < T; ++t1)
 			sum += q[t1];
 
-		h[t] = 1 - sum;
+		h[t] = sum;
 	}
 }
 
