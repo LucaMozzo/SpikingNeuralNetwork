@@ -244,23 +244,29 @@ array<array<double, TYI>, CLASSES*NEURONS_IN> OutputLayer::GradientW(char label,
 			short index = 0;
 			for (short i = t - 1; i > t - TYI; --i)
 			{
-				if (i < 0)
+				if (i < 0) 
+				{
 					trainWindow[index++] = 0;
+				}
 				else
 				{
 					trainWindow[index++] = x[trainIndex][i];
 				}
 			}
 
-			auto dotProd = MatrixOps::Dot(basisTranspose, trainWindow);
+			if (MatrixOps::Sum(trainWindow) != 0) {
 
-			//check the two cases
-			if (j%10 == label)
-				//if the current output neuron = the label
-				MatrixOps::Multiply(h[t] * g(u[j%10][t]) - q[t], dotProd);	
-			else
-				MatrixOps::Multiply(h[t] * g(u[j%10][t]), dotProd);
-			sum = MatrixOps::SumArrays(sum, dotProd);
+				auto dotProd = MatrixOps::Dot(basisTranspose, trainWindow);
+
+				//check the two cases
+				if (j % 10 == label)
+					//if the current output neuron = the label
+					MatrixOps::Multiply(h[t] * g(u[j % 10][t]) - q[t], dotProd);
+				else
+					MatrixOps::Multiply(h[t] * g(u[j % 10][t]), dotProd);
+				sum = MatrixOps::SumArrays(sum, dotProd);
+			}
+			
 		}
 		MatrixOps::Multiply(-1, sum);
 		gradients[j] = sum;
