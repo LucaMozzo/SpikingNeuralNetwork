@@ -39,7 +39,7 @@ public:
 	array<array<double, T-1>, CLASSES*NEURONS_IN> ApplyAlphas();
 	/**
 	Updates the weights w using the errors
-	@params errors The errors for updating the weights
+	@params gradients The gradients for updating the weights
 	*/
 	void UpdateAlphas(array<array<double, TYI>, CLASSES*NEURONS_IN>& gradients);
 };

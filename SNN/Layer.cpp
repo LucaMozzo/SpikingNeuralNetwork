@@ -177,25 +177,6 @@ array<double, T> OutputLayer::FTSProbability(char label)
 
 void OutputLayer::ComputeQ(char label)
 {
-	/*auto p = FTSProbability(label);
-	double minProb = INT_MAX;
-	//find minimum ln(pt)
-	for (auto probability : p)
-		if (log(probability) < minProb)
-			minProb = log(probability);
-	
-	//normalize the terms and compute the sum
-	double psum = 0;
-	for (auto& probability : p) 
-	{
-		probability = log(probability) - minProb;
-		psum += exp(probability);
-	}
-	
-	for(short t = 0; t < T; ++t)
-	{
-		q[t] = exp(p[t]) / psum;
-	}*/
 	auto p = FTSProbability(label);
 
 	auto psum = MatrixOps::Sum<T>(p);

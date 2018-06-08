@@ -87,11 +87,14 @@ void Network::Train(short epochs, int trainingImages,
 			for (int i = 0; i < data.size(); ++i)
 			{
 				Run(data[i].first);
-				auto errors = outputLayer.ComputeErrors(data[i].second);
-				inputLayer.UpdateAlphas(errors);
+				outputLayer.ComputeQ(data[i].second);
+				outputLayer.ComputeH(data[i].second);
 
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
+				auto wgrad = outputLayer.GradientW(data[i].second, inputLayer.trains, inputLayer.basis);
+				auto gammagrad = outputLayer.GradientGamma(data[i].second);
+
+				inputLayer.UpdateAlphas(wgrad);
+				outputLayer.UpdateGammas(gammagrad);
 			}
 		}
 	else
@@ -102,11 +105,15 @@ void Network::Train(short epochs, int trainingImages,
 			for (auto& img : *trainingData)
 			{
 				Run(img.first);
-				auto errors = outputLayer.ComputeErrors(img.second);
-				inputLayer.UpdateAlphas(errors);
 
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
+				outputLayer.ComputeQ(img.second);
+				outputLayer.ComputeH(img.second);
+
+				auto wgrad = outputLayer.GradientW(img.second, inputLayer.trains, inputLayer.basis);
+				auto gammagrad = outputLayer.GradientGamma(img.second);
+
+				inputLayer.UpdateAlphas(wgrad);
+				outputLayer.UpdateGammas(gammagrad);
 			}
 		}
 	}

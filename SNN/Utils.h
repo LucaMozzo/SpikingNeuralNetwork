@@ -31,10 +31,11 @@ private:
 	@param imagesPath Path of the image database
 	@param labelsPath Path of the labels database
 	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@param maxImagesPerLabel The maximum of images for each digit
 	@return The a list of <image, label> pairs
 	*/
 	template<std::size_t FILTER_SIZE>
-	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> ReadMNIST(int NumberOfImages, string imagesPath, string labelsPath, array<unsigned char, FILTER_SIZE>* filter);
+	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> ReadMNIST(int NumberOfImages, string imagesPath, string labelsPath, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel);
 
 public:
 
@@ -55,19 +56,21 @@ public:
 	@param FILTER_SIZE The number of elements in the filter
 	@param NumberOfImages Number of images to read from the database
 	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@param maxImagesPerLabel The maximum of images for each digit
 	@return The a list of <image, label> pairs
 	*/
 	template<std::size_t FILTER_SIZE>
-	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTrainingData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter=nullptr);
+	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTrainingData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter = nullptr, int maxImagesPerLabel = 0);
 	/**
 	Returns the test data
 	@param FILTER_SIZE The number of elements in the filter
 	@param NumberOfImages Number of images to read from the database
 	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
+	@param maxImagesPerLabel The maximum of images for each digit
 	@return The a list of <image, label> pairs
 	*/
 	template<std::size_t FILTER_SIZE>
-	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTestData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter=nullptr);
+	static vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> GetTestData(int NumberOfImages, array<unsigned char, FILTER_SIZE>* filter = nullptr, int maxImagesPerLabel = 0);
 	/**
 	Generates the basis matrix A
 	@returns The basis matrix A
@@ -87,9 +90,11 @@ public:
 
 template <std::size_t FILTER_SIZE>
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::ReadMNIST(int NumberOfImages, string imagesPath,
-	string labelsPath, array<unsigned char, FILTER_SIZE>* filter)
+	string labelsPath, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
 {
 	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> arr = vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>(0);
+
+	int imagesPerLabel[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	std::ifstream images_file(imagesPath, std::ios::binary);
 	std::ifstream labels_file(labelsPath, std::ios::binary);
@@ -135,12 +140,14 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::ReadMNIST(i
 			if (filter != NULL && std::find(filter->begin(), filter->end(), tmp) == filter->end())
 				continue; //skip image if not in the filter
 
+			if (imagesPerLabel[tmp] >= maxImagesPerLabel && maxImagesPerLabel != 0)
+				continue; //reached max number of images for that digit (0=no limit)
 			//else add the pair to the vector
 			pair<array<unsigned char, NEURONS_IN>, unsigned char> entry{};
 			entry.first = imgdata;
 			entry.second = tmp;
 			arr.push_back(entry);
-
+			++imagesPerLabel[tmp];
 		}
 		return arr;
 	}
@@ -149,9 +156,9 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::ReadMNIST(i
 
 template <std::size_t FILTER_SIZE>
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTrainingData(int NumberOfImages,
-	array<unsigned char, FILTER_SIZE>* filter)
+	array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
 {
-	auto data = ReadMNIST<FILTER_SIZE>(NumberOfImages, TRAIN_IMAGES_PATH, TRAIN_LABELS_PATH, filter);
+	auto data = ReadMNIST<FILTER_SIZE>(NumberOfImages, TRAIN_IMAGES_PATH, TRAIN_LABELS_PATH, filter, maxImagesPerLabel);
 
 	//shuffle the array using Fisher–Yates algorithm
 	int i = data.size() - 1;
@@ -171,8 +178,8 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTraining
 
 template <std::size_t FILTER_SIZE>
 vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData(int NumberOfImages,
-	array<unsigned char, FILTER_SIZE>* filter)
+	array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
 {
-	return ReadMNIST<FILTER_SIZE>(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH, filter);
+	return ReadMNIST<FILTER_SIZE>(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH, filter, maxImagesPerLabel);
 }
 

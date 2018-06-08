@@ -12,16 +12,16 @@ std::mutex Utils::lock;
 
 float Utils::RaisedCosine(int time, int mean, float stddev)
 {
-	return 0.5 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
+	return 0.45 * (1 + cos((time - mean) / stddev * M_PI)) + 0.1;
 }
 
 array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 {
 	array<array<double, Ka>, TYI> result = array<array<double, Ka>, TYI>();
 
-	if(BASIS_FUNCTION == RAISED_COSINE)
+	if (BASIS_FUNCTION == RAISED_COSINE)
 	{
-		for(short i = 0; i < 2*Ka; i+=2)
+		for (short i = 0; i < 2 * Ka; i += 2)
 		{
 			result[i / 2] = array<double, Ka>();
 			for (short j = 0; j < TYI; ++j)
@@ -31,9 +31,9 @@ array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 	else
 	{
 		//binary
-		for(short i = 0; i < Ka; ++i)
+		for (short i = 0; i < Ka; ++i)
 		{
-			for(short j = 0; j < Ka; ++j)
+			for (short j = 0; j < Ka; ++j)
 			{
 				result[i][j] = i == j ? 1 : 0;
 			}
@@ -42,32 +42,6 @@ array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 	return result;
 }
 
-array<array<double, Kb>, TYO> Utils::GenerateBetaBasis()
-{
-	array<array<double, Kb>, TYO> result = array<array<double, Kb>, TYO>();
-
-	if(BASIS_FUNCTION == RAISED_COSINE)
-	{
-		for (short i = 0; i < 2 * Kb; i += 2)
-		{
-			result[i / 2] = array<double, Kb>();
-			for (short j = 0; j < TYO; ++j)
-				result[i / 2][j] = RaisedCosine(j, i, Kb);
-		}
-	}
-	else
-	{
-		//binary
-		for(short i = 0; i < Ka; ++i)
-		{
-			for(short j = 0; j < Ka; ++j)
-			{
-				result[i][j] = i == j ? 1 : 0;
-			}
-		}
-	}
-	return result;
-}
 
 /*
  Return a probability of spiking for every pixel
