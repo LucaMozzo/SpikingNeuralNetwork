@@ -83,8 +83,8 @@ void DatabaseOps::ExportData(InputLayer * inputLayer, OutputLayer * outputLayer,
 	{
 		for(char j = 0; j < TYO; ++j)
 		{
-			str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->v[i][j]) + ", 2);";
-			sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
+			//str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->v[i][j]) + ", 2);";
+			//sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
 		}
 		str = "INSERT INTO Weight (`VALUE`, LAYERID) VALUES (" + std::to_string(outputLayer->gammas[i]) + ", 2);";
 		sqlite3_exec(db, str.c_str(), NULL, NULL, &error);
@@ -157,7 +157,7 @@ void DatabaseOps::ImportData(InputLayer* inputLayer, OutputLayer* outputLayer, s
 			{
 				beta[j] = atof(results[i]);
 			}
-			outputLayer->v[c] = beta;
+			//outputLayer->v[c] = beta;
 			outputLayer->gammas[c++] = atof(results[i]);
 		}
 	}

@@ -42,7 +42,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas()
 	return result;
 }
 
-void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
+void InputLayer::UpdateAlphas(array<array<double, TYI>, CLASSES*NEURONS_IN>& gradients)
 {
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
 	{
