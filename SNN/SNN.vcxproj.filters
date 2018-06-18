@@ -81,7 +81,4 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram_Full.cd" />
-  </ItemGroup>
 </Project>
