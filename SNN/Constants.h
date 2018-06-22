@@ -11,11 +11,11 @@ const short CLASSES = 10; /**< Number of classes*/
 const short NEURONS_IN = 784; /**< Number of input neurons*/
 
 const short T = 4; /**< Length of the spike train*/
-const short TYI = 3; /**< Length of short-term memory window in presynaptic phase*/
+const short TYI = 4; /**< Length of short-term memory window in presynaptic phase*/
 const short Ka = TYI; /**< Number of alpha bases*/
-const short TYO = 2; /**< Length of short-term memory window in feedback phase*/
+const short TYO = 4; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/
-const float LEARNING_RATE =  0.00005; /**< Learning rate*/
+const float LEARNING_RATE =  0.5; /**< Learning rate*/
 const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities for spike encoding*/
 
 const string TRAIN_IMAGES_PATH = "D:\\train-images.idx3-ubyte"; /**< Training images database path*/
