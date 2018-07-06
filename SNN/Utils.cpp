@@ -87,9 +87,12 @@ int Utils::ReverseInt(int i)
 
 void Utils::PrintLine(string&& str)
 {
-	lock.lock();
-	const auto threadId = std::this_thread::get_id();
-	std::cout << threadId << "> " << str << std::endl;
-	lock.unlock();
+	auto now = std::chrono::system_clock::now();
+	auto now_c = std::chrono::system_clock::to_time_t(now);
+	//lock.lock();
+	//const auto threadId = std::this_thread::get_id();
+#pragma warning(suppress : 4996)
+	std::cout << std::put_time(std::localtime(&now_c), "%c") << " - " << str << std::endl;
+	//lock.unlock();
 }
 

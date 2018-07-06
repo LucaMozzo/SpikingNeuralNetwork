@@ -174,7 +174,7 @@ int Network::CrossValidate()
 
 		//train and validate
 		ResetNetwork();
-		Train<0>(0,0,&trainingSet);
+		Train<0>(1,0,&trainingSet);
 		sum += ValidateDataset(folds[i]);
 	}
 
