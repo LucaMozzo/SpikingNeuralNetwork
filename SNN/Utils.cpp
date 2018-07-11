@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
 #include <thread>
+#include <sstream>
 
 #define M_PI 3.14159265358979323846L
 
@@ -41,6 +42,23 @@ array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 		}
 	}
 	return result;
+}
+
+array<unsigned char, NEURONS_IN> & Utils::LoadImage(std::string file)
+{
+	array<unsigned char, NEURONS_IN> imageBuffer{};
+
+	std::ifstream pixels(file);
+	std::string line;
+	std::getline(pixels, line); //just the first image
+	std::string buf;
+	std::stringstream ss(line);
+
+	short index = 0;
+	while (ss >> buf)
+		imageBuffer[index++] = atoi(buf.c_str());
+
+	return imageBuffer;
 }
 
 
