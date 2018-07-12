@@ -118,7 +118,8 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			probability = g(u[c][t]);
 			probability = probability * 10000;
 
-			if (rand() % 10000 <= probability)
+			//TODO roll back
+			if (probability > 0/*rand() % 10000 <= probability*/)
 				y[c][t] = 1;
 			else
 				y[c][t] = 0;
@@ -141,36 +142,32 @@ char OutputLayer::ComputeWinner() const
 array<double, T> OutputLayer::FTSProbability(char label)
 {
 	auto probabilities = array<double, T>();
+	auto pt = array<array<double, CLASSES>, T>();
 
-	for (short t = 0; t < T; ++t) 
+	for (short t = 0; t < T; ++t)
 	{
-		double prob = 0;
-		bool flag = true;
 		for (int i = 0; i < CLASSES; ++i)
 		{
 			//skip the correct class
 			if (i == label)
 				continue;
 
-			for (short t1 = 0; t1 <= t; ++t1)
-			{
-				if (flag)
-				{
-					prob = (1 - g(u[i][t1])) * g(u[label][t]);
-					flag = !flag;
-				}
-				else
-					prob *= (1 - g(u[i][t1])) * g(u[label][t]);
-
-				for (short t2 = 0; t2 <= t - 1; ++t2)
-				{
-					prob *= (1 - g(u[label][t2]));
-				}
-			}
+			double prob = g(-u[i][t]);
+			for (int t1 = 0; t1 < t; ++t1)
+				prob *= g(-u[i][t1]);
+			pt[t][i] = prob;
 		}
+		//pt of the correct label
+		pt[t][label] = g(u[label][t]);
+		for (int t1 = 0; t1 <= t-1; ++t1)
+			pt[t][label] *= g(-u[label][t1]);
 
-		probabilities[t] = prob;
+		//final probability
+		probabilities[t] = pt[t][0];
+		for (int i = 1; i < CLASSES; ++i)
+			probabilities[t] *= pt[t][i];
 	}
+
 
 	return probabilities;
 }
