@@ -16,6 +16,8 @@ protected:
 	*/
 	void ResetNetwork();
 
+	int epoch = 0;
+
 public:
 
 	/**
@@ -50,6 +52,14 @@ public:
 	*/
 	void ExportData(string fileName = "data.db");
 	/**
+	Import network weights from a txt file
+	*/
+	void ImportFile();
+	/**
+	Export network weights to a txt file
+	*/
+	void ExportFile();
+	/**
 	Validates the network on any data
 	@param FILTER_SIZE The number of elements in the filter
 	@param testImages The number of images used for validation. The range should be [1 10000] for the test set and [1 60000] for the training one
@@ -80,7 +90,7 @@ void Network::Train(short epochs, int trainingImages,
 	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
 {
 	if (!trainingData)
-		for (short epoch = 0; epoch < epochs; ++epoch)
+		for (short e = 0; e < e; ++epoch, ++e)
 		{
 			Utils::PrintLine("Epoch " + std::to_string(epoch));
 			auto data = Utils::GetTrainingData(trainingImages, filter, maxImagesPerLabel);

@@ -145,11 +145,11 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		for (short t = 1; t < T; ++t)
 		{
 			array<double, TYO> beta = array<double, TYO>();
-			short yIndex = t - TYO;
+			short yIndex = t - 1;
 			for (short b = 0; b < TYO; ++b)
 			{
-				if (yIndex++ >= 0)
-					beta[b] = y[c][yIndex-1] * MatrixOps::Dot(basis, v[c])[b];
+				if (yIndex-- >= 0)
+					beta[b] = y[c][yIndex+1] * MatrixOps::Dot(basis, v[c])[b];
 				else
 					beta[b] = 0;
 			}

@@ -5,6 +5,7 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 using std::string;
 using std::vector;
@@ -46,6 +47,85 @@ void Network::ImportData(string fileName)
 void Network::ExportData(string fileName)
 {
 	DatabaseOps::ExportData(&inputLayer, &outputLayer, fileName);
+}
+
+void Network::ImportFile()
+{
+	std::ifstream wweights("wweights.txt");
+	std::ifstream vweights("vweights.txt");
+	std::ifstream gweights("gweights.txt");
+	std::string line;
+	//i is the index of w or v where the value should be put
+	for(short i = 0; i < TYI; ++i)
+	{
+		std::getline(wweights, line);
+		std::string buf;
+		std::stringstream ss(line);
+
+		int index = 0;
+		while (ss >> buf)
+			inputLayer.w[index++][i] = atof(buf.c_str());
+	}
+
+	wweights.close();
+	
+	for (short i = 0; i < TYO; ++i)
+	{
+		std::getline(vweights, line);
+		std::string buf;
+		std::stringstream ss(line);
+
+		int index = 0;
+		while (ss >> buf)
+			outputLayer.v[index++][i] = atof(buf.c_str());
+	}
+
+	vweights.close();
+
+	//gammas
+	for (short i = 0; i < CLASSES; ++i)
+	{
+		std::getline(gweights, line);
+		std::string buf;
+		std::stringstream ss(line);
+
+		while (ss >> buf)
+			outputLayer.gammas[i] = atof(buf.c_str());
+	}
+
+	gweights.close();
+}
+
+void Network::ExportFile()
+{
+	std::ofstream wweights;
+	std::ofstream vweights;
+	std::ofstream gweights;
+	wweights.open("wweights_out.txt");
+	for (short i = 0; i < TYI; ++i)
+	{
+		for(int index = 0; index < NEURONS_IN*CLASSES; ++index)
+			wweights << inputLayer.w[index][i] << " ";
+		wweights << "\n";
+	}
+	wweights.flush();
+	wweights.close();
+
+	vweights.open("vweights_out.txt");
+	for (short i = 0; i < TYO; ++i)
+	{
+		for (int index = 0; index < CLASSES; ++index)
+			vweights << outputLayer.v[index][i] << " ";
+		vweights << "\n";
+	}
+	vweights.flush();
+	vweights.close();
+
+	gweights.open("gweights_out.txt");
+	for (int index = 0; index < CLASSES; ++index)
+		gweights << outputLayer.gammas[index] << "\n";
+	gweights.flush();
+	gweights.close();
 }
 
 int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
@@ -110,6 +190,7 @@ void Network::ResetNetwork()
 
 int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool collectData)
 {
+	epoch = 0;
 	//get labels*imagesPerLabel images
 	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> trainingSet;
 	trainingSet = Utils::GetTrainingData<0>(60000, nullptr, imagesPerLabel);
