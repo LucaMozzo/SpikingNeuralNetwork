@@ -118,8 +118,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			probability = g(u[c][t]);
 			probability = probability * 10000;
 
-			//TODO roll back
-			if (probability > 0/*rand() % 10000 <= probability*/)
+			if (rand() % 10000 <= probability)
 				y[c][t] = 1;
 			else
 				y[c][t] = 0;
@@ -222,14 +221,10 @@ array<array<double, TYI>, CLASSES*NEURONS_IN> OutputLayer::GradientW(char label,
 			short index = 0;
 			for (short i = t - 1; i > t - TYI; --i)
 			{
-				if (i < 0) 
-				{
+				if (i < 0)
 					trainWindow[index++] = 0;
-				}
 				else
-				{
 					trainWindow[index++] = x[trainIndex][i];
-				}
 			}
 
 			if (MatrixOps::Sum(trainWindow) != 0) {

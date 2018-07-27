@@ -97,12 +97,12 @@ void Network::Train(short epochs, int trainingImages,
 			for (int i = 0; i < data.size(); ++i)
 			{
 				Run(data[i].first);
-				// TODO change label
-				outputLayer.ComputeQ(/*data[i].second*/9);
-				outputLayer.ComputeH(/*data[i].second*/9);
+
+				outputLayer.ComputeQ(data[i].second);
+				outputLayer.ComputeH(data[i].second);
 				
-				auto wgrad = outputLayer.GradientW(/*data[i].second*/9, inputLayer.trains, inputLayer.basis);
-				auto gammagrad = outputLayer.GradientGamma(/*data[i].second*/9);
+				auto wgrad = outputLayer.GradientW(data[i].second, inputLayer.trains, inputLayer.basis);
+				auto gammagrad = outputLayer.GradientGamma(data[i].second);
 
 				inputLayer.UpdateAlphas(wgrad);
 				outputLayer.UpdateGammas(gammagrad);

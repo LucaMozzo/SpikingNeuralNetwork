@@ -84,13 +84,10 @@ array<bool,T> Utils::GenerateSpikes(float probability)
 {
 	array<bool,T> train = array<bool,T>();
 
-	//random seed
-
-	//TODO: fix spikes gen
-	//probability = probability * 10000;
+	probability = probability * 10000;
 
 	for (int i = 0; i < T; ++i)
-		if (probability > 0/*rand() % 10000 <= probability*/)
+		if (rand() % 10000 <= probability)
 			train[i] = 1;
 		else
 			train[i] = 0;

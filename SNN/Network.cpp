@@ -23,8 +23,8 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 	inputLayer.ResetTrains();
 	outputLayer.Reset();
 
-	//TODO remove override
-	image = Utils::LoadImage("IN_train.txt");
+	//remove override
+	//image = Utils::LoadImage("IN_train.txt");
 
 	// 2. Generate the spikes in the input layer
 	auto probs = Utils::RateEncode(image);
