@@ -29,7 +29,7 @@ public:
 	@param image The input image to be classified
 	@return The predicted class of the image
 	*/
-	char Run(array<unsigned char, NEURONS_IN> image);
+	char Run(array<unsigned char, NEURONS_IN> image, signed char label = -1);
 	/**
 	Trains the network
 	@param FILTER_SIZE The number of elements in the filter
@@ -96,7 +96,7 @@ void Network::Train(short epochs, int trainingImages,
 			auto data = Utils::GetTrainingData(trainingImages, filter, maxImagesPerLabel);
 			for (int i = 0; i < data.size(); ++i)
 			{
-				Run(data[i].first);
+				Run(data[i].first, data[i].second);
 				auto errors = outputLayer.ComputeErrors(data[i].second);
 				inputLayer.UpdateAlphas(errors);
 
@@ -111,7 +111,7 @@ void Network::Train(short epochs, int trainingImages,
 			Utils::PrintLine("Epoch " + std::to_string(epoch) + " (" + std::to_string(trainingData->size()) + " images)");
 			for (auto& img : *trainingData)
 			{
-				Run(img.first);
+				Run(img.first, img.second);
 				auto errors = outputLayer.ComputeErrors(img.second);
 				inputLayer.UpdateAlphas(errors);
 

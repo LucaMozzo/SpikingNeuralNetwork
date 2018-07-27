@@ -71,7 +71,7 @@ public:
 	Computes the potential and output starting from the preprocessed trains
 	@param synapsesOut The preprocessed spike trains from the input layer
 	*/
-	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut);
+	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label = -1);
 	/**
 	Computes the errors at every time t for the given class
 	@params label The class for which compute the errors

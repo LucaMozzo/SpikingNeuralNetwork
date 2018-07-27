@@ -1,5 +1,6 @@
 #include "Layer.h"
 #include "Utils.h"
+#include "Constants.h"
 
 InputLayer::InputLayer()
 {
@@ -112,7 +113,7 @@ void OutputLayer::Reset()
 	y = array<array<bool, T>, CLASSES>();
 }
 
-void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -133,14 +134,29 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
-		//compute spiking
-		double probability = g(u[c][0]);
-		probability = probability * 10000;
+		double probability;
 
-		if (rand() % 10000 <= probability)
-			y[c][0] = 1;
+		if(label == -1)
+		{
+			//prediction, compute spiking
+			probability = g(u[c][0]);
+			probability = probability * 10000;
+
+			if (rand() % 10000 <= probability)
+				y[c][0] = 1;
+			else
+				y[c][0] = 0;
+		}
 		else
-			y[c][0] = 0;
+		{
+			//training, preset y
+			for(char i = 0; i < CLASSES; ++i)
+				for(int j = 0; j < T; ++j)
+					if(i == label)
+						y[i][j] = 1;
+					else
+						y[i][j] = 0;
+		}
 
 		for (short t = 1; t < T; ++t)
 		{
@@ -157,14 +173,17 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			// sum together alpha, beta, gamma => potential
 			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
 
-			//compute spiking
-			probability = g(u[c][t]);
-			probability = probability * 10000;
+			if(label == -1)
+			{
+				//compute spiking
+				probability = g(u[c][t]);
+				probability = probability * 10000;
 
-			if (rand() % 10000 <= probability)
-				y[c][t] = 1;
-			else
-				y[c][t] = 0;
+				if (rand() % 10000 <= probability)
+					y[c][t] = 1;
+				else
+					y[c][t] = 0;
+			}
 		}
 	}
 }
@@ -177,7 +196,7 @@ array<array<double, T>, CLASSES> OutputLayer::ComputeErrors(unsigned char label)
 		array<double, T> diff = array<double, T>();
 		for (short t = 0; t < T; ++t)
 		{
-			diff[t] = (label == c ? 1 : 0) - g(u[c][t]);
+			diff[t] = (label == c ? CORRECT_PATTERN[t] : 0) - g(u[c][t]);
 		}
 		diffs[c] = diff;
 	}

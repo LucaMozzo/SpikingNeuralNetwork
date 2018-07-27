@@ -1,8 +1,10 @@
 #pragma once
 #include <cmath>
 #include <fstream>
+#include <array>
 
 using std::string;
+using std::array;
 
 /*! \file */
 
@@ -21,6 +23,7 @@ const short TYO = 4; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/
 const float LEARNING_RATE =  0.001; /**< Learning rate*/
 const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities for spike decoding*/
+const array<char, T> CORRECT_PATTERN = {0, 1, 0, 1}; /**< Pattern used to train the network (y)*/
 const BasisFunctions BASIS_FUNCTION = BINARY;
 const string TRAIN_IMAGES_PATH = "train-images.idx3-ubyte"; /**< Training images database path*/
 const string TRAIN_LABELS_PATH = "train-labels.idx1-ubyte"; /**< Training labels database path*/
