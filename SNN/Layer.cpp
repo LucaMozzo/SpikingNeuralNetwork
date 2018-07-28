@@ -153,7 +153,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			for(char i = 0; i < CLASSES; ++i)
 				for(int j = 0; j < T; ++j)
 					if(i == label)
-						y[i][j] = 1;
+						y[i][j] = CORRECT_PATTERN[j];
 					else
 						y[i][j] = 0;
 		}

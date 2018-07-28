@@ -142,7 +142,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			probability = probability * 10000;
 
 			if (rand() % 10000 <= probability)
-				y[c][0] = 1;
+				y[c][0] = CORRECT_PATTERN[j];
 			else
 				y[c][0] = 0;
 		}
@@ -179,7 +179,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				probability = probability * 10000;
 
 				if (rand() % 10000 <= probability)
-					y[c][t] = 1;
+					y[c][t] = CORRECT_PATTERN[j];
 				else
 					y[c][t] = 0;
 			}
