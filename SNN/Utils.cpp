@@ -2,7 +2,6 @@
 #include "Utils.h"
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
-#include <thread>
 
 # define M_PI 3.14159265358979323846L
 
@@ -19,11 +18,26 @@ float Utils::RaisedCosine(int time, int mean, float stddev)
 array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 {
 	array<array<double, Ka>, TYI> result = array<array<double, Ka>, TYI>();
-	for(short i = 0; i < 2*Ka; i+=2)
+
+	if(BASIS_FUNCTION == RAISED_COSINE)
 	{
-		result[i / 2] = array<double, Ka>();
-		for (short j = 0; j < TYI; ++j)
-			result[i / 2][j] = RaisedCosine(j, i, Ka);
+		for(short i = 0; i < 2*Ka; i+=2)
+		{
+			result[i / 2] = array<double, Ka>();
+			for (short j = 0; j < TYI; ++j)
+				result[i / 2][j] = RaisedCosine(j, i, Ka);
+		}
+	}
+	else
+	{
+		//binary
+		for(short i = 0; i < Ka; ++i)
+		{
+			for(short j = 0; j < Ka; ++j)
+			{
+				result[i][j] = i == j ? 1 : 0;
+			}
+		}
 	}
 	return result;
 }
@@ -31,11 +45,26 @@ array<array<double, Ka>, TYI> Utils::GenerateAlphaBasis()
 array<array<double, Kb>, TYO> Utils::GenerateBetaBasis()
 {
 	array<array<double, Kb>, TYO> result = array<array<double, Kb>, TYO>();
-	for (short i = 0; i < 2 * Kb; i += 2)
+
+	if(BASIS_FUNCTION == RAISED_COSINE)
 	{
-		result[i / 2] = array<double, Kb>();
-		for (short j = 0; j < TYO; ++j)
-			result[i / 2][j] = RaisedCosine(j, i, Kb);
+		for (short i = 0; i < 2 * Kb; i += 2)
+		{
+			result[i / 2] = array<double, Kb>();
+			for (short j = 0; j < TYO; ++j)
+				result[i / 2][j] = RaisedCosine(j, i, Kb);
+		}
+	}
+	else
+	{
+		//binary
+		for(short i = 0; i < Ka; ++i)
+		{
+			for(short j = 0; j < Ka; ++j)
+			{
+				result[i][j] = i == j ? 1 : 0;
+			}
+		}
 	}
 	return result;
 }
@@ -89,10 +118,8 @@ void Utils::PrintLine(string&& str)
 {
 	auto now = std::chrono::system_clock::now();
 	auto now_c = std::chrono::system_clock::to_time_t(now);
-	//lock.lock();
-	//const auto threadId = std::this_thread::get_id();
+
 #pragma warning(suppress : 4996)
 	std::cout << std::put_time(std::localtime(&now_c), "%c") << " - " << str << std::endl;
-	//lock.unlock();
 }
 

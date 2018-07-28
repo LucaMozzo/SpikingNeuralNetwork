@@ -16,7 +16,7 @@ Network::Network()
 	outputLayer = OutputLayer();
 }
 
-char Network::Run(array<unsigned char, NEURONS_IN> image)
+char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 {
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
@@ -33,7 +33,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
-	outputLayer.ComputeOutput(preProcessedTrains);
+	outputLayer.ComputeOutput(preProcessedTrains, label);
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();
@@ -137,8 +137,6 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
-		/*else
-			Utils::PrintLine("Expected " + std::to_string(trainingSet[i].second) + " but got " + std::to_string(res));*/
 	}
 
 	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");
@@ -186,4 +184,43 @@ void Network::ResetNetwork()
 {
 	inputLayer = InputLayer();
 	outputLayer = OutputLayer();
+}
+
+int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool collectData)
+{
+	epoch = 0;
+	//get labels*imagesPerLabel images
+	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> trainingSet;
+	trainingSet = Utils::GetTrainingData<0>(60000, nullptr, imagesPerLabel);
+	//randomly pick validationImages images out of that
+	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> validationSet;
+	auto it = std::next(trainingSet.begin(), validationImages);
+	std::move(trainingSet.begin(), it, std::back_inserter(validationSet));
+	trainingSet.erase(trainingSet.begin(), it);
+	
+	if(collectData)
+	{
+		std::fstream outFile;
+		outFile.open("results.csv");
+		outFile << "T=" << T << "\n" << "Validation (%),Test (%)\n";
+		for(int e = 0; e < epochs; ++e){
+			Train<0>(1, 0, &trainingSet);
+			int validation = ValidateDataset(validationSet);
+			int test = Validate<0>(10000, true);
+
+			float validationPercent = validation / (float)validationSet.size() * 100;
+			float testPercent = test / 100.0f;
+			outFile << validationPercent << "," << testPercent << "\n";
+			outFile.flush();
+		}
+		outFile.close();
+		return 0; //not important
+	}
+	else
+	{
+		//train on first set
+		Train<0>(epochs, 0, &trainingSet);
+		//validate on second set
+		return ValidateDataset(validationSet);
+	}
 }

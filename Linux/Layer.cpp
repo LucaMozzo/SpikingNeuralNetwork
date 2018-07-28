@@ -117,7 +117,6 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
-		//srand(time(NULL));
 		u[c] = array<double, T>();
 		y[c] = array<bool, T>();
 
@@ -161,13 +160,13 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		for (short t = 1; t < T; ++t)
 		{
 			array<double, TYO> beta = array<double, TYO>();
-			short yIndex = t - 1;
+			short yIndex = t - 1; // I start considering the output at time t-tauy'
 			for (short b = 0; b < TYO; ++b)
 			{
-				if (yIndex-- >= 0)
-					beta[b] = y[c][yIndex+1] * MatrixOps::Dot(basis, v[c])[b];
+				if (yIndex-- >= 0) //if the window is within the boundaries
+					beta[b] = y[c][yIndex+1] * MatrixOps::Dot(basis, v[c])[b]; //use the formula to multiply beta * y
 				else
-					beta[b] = 0;
+					beta[b] = 0; //if the window is out of the boundaries, y is assumed to be 0
 			}
 
 			// sum together alpha, beta, gamma => potential
