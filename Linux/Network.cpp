@@ -15,7 +15,7 @@ Network::Network()
 	outputLayer = OutputLayer();
 }
 
-char Network::Run(array<unsigned char, NEURONS_IN> image)
+char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 {
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
@@ -32,7 +32,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image)
 
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
-	outputLayer.ComputeOutput(preProcessedTrains);
+	outputLayer.ComputeOutput(preProcessedTrains, label);
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();
@@ -111,8 +111,6 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
-		//else
-			//Utils::PrintLine("Expected " + std::to_string(trainingSet[i].second) + " but got " + std::to_string(res));
 	}
 
 	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");

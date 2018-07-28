@@ -79,7 +79,7 @@ void OutputLayer::Reset()
 	h = array<double, T>();
 }
 
-void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -100,28 +100,34 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
-							 //compute spiking
-		double probability = g(u[c][0]);
-		probability = probability * 10000;
+		double probability;
 
-		if (rand() % 10000 <= probability)
-			y[c][0] = 1;
-		else
-			y[c][0] = 0;
+		if (label == -1) {
+			//compute spiking onyl if training
+			probability = g(u[c][0]);
+			probability = probability * 10000;
+
+			if (rand() % 10000 <= probability)
+				y[c][0] = 1;
+			else
+				y[c][0] = 0;
+		}
 
 		for (short t = 1; t < T; ++t)
 		{
 			// sum together alpha, beta, gamma => potential
 			u[c][t] = gammas[c] + alphas[t - 1];
 
-			//compute spiking
-			probability = g(u[c][t]);
-			probability = probability * 10000;
+			if (label == -1) {
+				//compute spiking
+				probability = g(u[c][t]);
+				probability = probability * 10000;
 
-			if (rand() % 10000 <= probability)
-				y[c][t] = 1;
-			else
-				y[c][t] = 0;
+				if (rand() % 10000 <= probability)
+					y[c][t] = 1;
+				else
+					y[c][t] = 0;
+			}
 		}
 	}
 

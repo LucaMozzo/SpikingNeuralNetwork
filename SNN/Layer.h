@@ -72,7 +72,7 @@ public:
 	Computes the potential and output starting from the preprocessed trains
 	@param synapsesOut The preprocessed spike trains from the input layer
 	*/
-	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut);
+	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label = -1);
 
 	/**
 	Returns the "Winner" of the network: uses rate decoding to determine the class with the most spikes
