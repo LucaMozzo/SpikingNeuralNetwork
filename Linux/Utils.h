@@ -47,7 +47,7 @@ public:
 	Load an image from the specified text file
 	@param file the text file containing the pixels intensities
 	*/
-	static array<unsigned char, NEURONS_IN> & Utils::LoadImage(std::string file);
+	static array<unsigned char, NEURONS_IN> & LoadImage(std::string file);
 	/**
 	Perform rate encode on the pixels of the image
 	@param image The input image

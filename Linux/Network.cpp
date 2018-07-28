@@ -5,6 +5,7 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 using std::string;
 using std::vector;
