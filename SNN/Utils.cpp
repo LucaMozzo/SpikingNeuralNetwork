@@ -123,3 +123,7 @@ void Utils::PrintLine(string&& str)
 	std::cout << std::put_time(std::localtime(&now_c), "%c") << " - " << str << std::endl;
 }
 
+double Utils::GetStepSize(pair<double, double>& range)
+{
+	return (range.second - range.first) / (2 ^ (PRECISION - 1));
+}

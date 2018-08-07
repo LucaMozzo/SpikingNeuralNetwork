@@ -86,6 +86,19 @@ public:
 	@param str The string to be printed to terminal
 	*/
 	static void PrintLine(string&& str);
+	/**
+	Get the min and max weight in the given matrix
+	@param weights The matrix of weights
+	@returns The range of the weights
+	*/
+	template<std::size_t ROWS, std::size_t COLS>
+	static pair<double, double> GetWeightsRange(array<array<double, COLS>, ROWS>& weights);
+	/**
+	Get the step size for the weights quantization
+	@param range The max and min value of the weights
+	@returns The size of a step
+	*/
+	static double GetStepSize(pair<double, double>& range);
 };
 
 template <std::size_t FILTER_SIZE>
@@ -184,3 +197,15 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData
 	return ReadMNIST<FILTER_SIZE>(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH, filter, maxImagesPerLabel);
 }
 
+template<std::size_t ROWS, std::size_t COLS>
+inline pair<double, double> Utils::GetWeightsRange(array<array<double, COLS>, ROWS>& weights)
+{
+	pair<double, double> range(INT_MAX, INT_MIN);
+	for (short r = 0; r < ROWS; ++r)
+		for (short c = 0; c < COLS; ++c)
+			if (weights[r][c] < range.first)
+				range.first = weights[r][c];
+			else if (weights[r][c] > range.second)
+				range.second = weights[r][c];
+	return range;
+}
