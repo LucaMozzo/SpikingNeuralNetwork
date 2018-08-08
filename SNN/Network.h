@@ -17,6 +17,8 @@ protected:
 	*/
 	void ResetNetwork();
 
+	int epoch = 0;
+
 public:
 
 	/**
@@ -89,7 +91,7 @@ void Network::Train(short epochs, int trainingImages,
 	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>* trainingData, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
 {
 	if (!trainingData)
-		for (short epoch = 0; epoch < epochs; ++epoch)
+		for (short e = 0; e < epochs; ++e)
 		{
 			Utils::PrintLine("Epoch " + std::to_string(epoch));
 			auto data = Utils::GetTrainingData(trainingImages, filter, maxImagesPerLabel);
@@ -110,7 +112,7 @@ void Network::Train(short epochs, int trainingImages,
 		}
 	else
 	{
-		for (short epoch = 0; epoch < epochs; ++epoch)
+		for (short e = 0; e < epochs; ++e)
 		{
 			Utils::PrintLine("Epoch " + std::to_string(epoch) + " (" + std::to_string(trainingData->size()) + " images)");
 			for (auto& img : *trainingData)

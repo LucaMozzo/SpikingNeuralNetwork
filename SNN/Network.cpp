@@ -182,7 +182,7 @@ int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool
 		std::fstream outFile;
 		outFile.open("results.csv");
 		outFile << "T=" << T << "\n" << "Validation (%),Test (%)\n";
-		for (int e = 0; e < epochs; ++e) {
+		for (int e = 0; e < epochs; ++e, ++epoch) {
 			Train<0>(1, 0, &trainingSet);
 			int validation = ValidateDataset(validationSet);
 			int test = Validate<0>(10000, true);
