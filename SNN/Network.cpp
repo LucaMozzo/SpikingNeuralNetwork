@@ -42,6 +42,22 @@ char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 void Network::ImportData(string fileName)
 {
 	DatabaseOps::ImportData(&inputLayer, &outputLayer, fileName);
+
+	if(PRECISION > 0)
+	{
+		//perform quantization
+		auto wrange = Utils::GetMatrixRange<CLASSES * NEURONS_IN, TYI>(inputLayer.w);
+		auto vrange = Utils::GetMatrixRange<CLASSES, TYO>(outputLayer.v);
+		auto grange = Utils::GetVectorRange(outputLayer.gammas);
+
+		double wstep = Utils::GetStepSize(wrange);
+		double vstep = Utils::GetStepSize(vrange);
+		double gstep = Utils::GetStepSize(grange);
+
+		Utils::QuantizeMatrix(inputLayer.w, wstep);
+		Utils::QuantizeMatrix(outputLayer.v, vstep);
+		Utils::QuantizeVector(outputLayer.gammas, gstep);
+	}
 }
 
 void Network::ExportData(string fileName)
@@ -94,6 +110,22 @@ void Network::ImportFile()
 	}
 
 	gweights.close();
+
+	if (PRECISION > 0)
+	{
+		//perform quantization
+		auto wrange = Utils::GetMatrixRange<CLASSES * NEURONS_IN, TYI>(inputLayer.w);
+		auto vrange = Utils::GetMatrixRange<CLASSES, TYO>(outputLayer.v);
+		auto grange = Utils::GetVectorRange(outputLayer.gammas);
+
+		double wstep = Utils::GetStepSize(wrange);
+		double vstep = Utils::GetStepSize(vrange);
+		double gstep = Utils::GetStepSize(grange);
+
+		Utils::QuantizeMatrix(inputLayer.w, wstep);
+		Utils::QuantizeMatrix(outputLayer.v, vstep);
+		Utils::QuantizeVector(outputLayer.gammas, gstep);
+	}
 }
 
 void Network::ExportFile()

@@ -48,5 +48,7 @@ Approximated sigmoid function
 */
 static const double a_g(const double x)
 {
+	//double 
 	return 1 / (1 + exp(-x));
+	//return (x + (PRECISION + 1)) / pow;
 }

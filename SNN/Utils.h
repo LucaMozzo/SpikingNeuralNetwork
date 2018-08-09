@@ -92,13 +92,32 @@ public:
 	@returns The range of the weights
 	*/
 	template<std::size_t ROWS, std::size_t COLS>
-	static pair<double, double> GetWeightsRange(array<array<double, COLS>, ROWS>& weights);
+	static pair<double, double> GetMatrixRange(array<array<double, COLS>, ROWS>& weights);
+	/**
+	Get the min and max bias in the given array
+	@param weights The matrix of biases
+	@returns The range of the biases
+	*/
+	static pair<double, double> GetVectorRange(array<double, CLASSES>& biases);
 	/**
 	Get the step size for the weights quantization
 	@param range The max and min value of the weights
 	@returns The size of a step
 	*/
 	static double GetStepSize(pair<double, double>& range);
+	/**
+	Compute the quantized weights
+	@param weights The matrix of weights
+	@param stepSize The size of 1 step
+	*/
+	template<std::size_t ROWS, std::size_t COLS>
+	static void QuantizeMatrix(array<array<double, COLS>, ROWS>& weights, double stepSize);
+	/**
+	Compute the quantized biases
+	@param bias The vector of biases
+	@param stepSize The size of 1 step
+	*/
+	static void QuantizeVector(array<double, CLASSES>& bias, double stepSize);
 };
 
 template <std::size_t FILTER_SIZE>
@@ -198,7 +217,7 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData
 }
 
 template<std::size_t ROWS, std::size_t COLS>
-inline pair<double, double> Utils::GetWeightsRange(array<array<double, COLS>, ROWS>& weights)
+inline pair<double, double> Utils::GetMatrixRange(array<array<double, COLS>, ROWS>& weights)
 {
 	pair<double, double> range(INT_MAX, INT_MIN);
 	for (short r = 0; r < ROWS; ++r)
@@ -208,4 +227,12 @@ inline pair<double, double> Utils::GetWeightsRange(array<array<double, COLS>, RO
 			else if (weights[r][c] > range.second)
 				range.second = weights[r][c];
 	return range;
+}
+
+template<std::size_t ROWS, std::size_t COLS>
+inline void Utils::QuantizeMatrix(array<array<double, COLS>, ROWS>& weights, double stepSize)
+{
+	for (short r = 0; r < ROWS; ++r)
+		for (short c = 0; c < COLS; ++c)
+			weights[r][c] = stepSize * round(weights[r][c] / stepSize);
 }

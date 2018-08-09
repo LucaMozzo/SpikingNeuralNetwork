@@ -123,7 +123,25 @@ void Utils::PrintLine(string&& str)
 	std::cout << std::put_time(std::localtime(&now_c), "%c") << " - " << str << std::endl;
 }
 
+pair<double, double> Utils::GetVectorRange(array<double, CLASSES>& biases)
+{
+	pair<double, double> range(INT_MAX, INT_MIN);
+	for (short r = 0; r < CLASSES; ++r)
+		if (biases[r] < range.first)
+			range.first = biases[r];
+		else if (biases[r] > range.second)
+			range.second = biases[r];
+	return range;
+}
+
 double Utils::GetStepSize(pair<double, double>& range)
 {
-	return (range.second - range.first) / (2 ^ (PRECISION - 1));
+	return ((int)(((range.second - range.first) / pow(2, (PRECISION - 1)) * 10000)) / 10000.);
+	//return (range.second - range.first) / pow(2, (PRECISION - 1));
+}
+
+void Utils::QuantizeVector(array<double, CLASSES>& bias, double stepSize)
+{
+	for (short r = 0; r < CLASSES; ++r)
+		bias[r] = stepSize * round(bias[r] / stepSize);
 }

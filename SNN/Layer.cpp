@@ -134,12 +134,22 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
+		if (PRECISION > 0)
+		{
+			double ustep = Utils::GetStepSize(pair<double, double>(-8, 8));
+			u[c][0] = ustep * round(u[c][0] / ustep);
+		}
 		double probability;
 
 		if(label == -1)
 		{
 			//prediction, compute spiking
-			probability = g(u[c][0]);
+			probability = a_g(u[c][0]);
+			if (PRECISION > 0)
+			{
+				double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
+				probability = agstep * round(probability / agstep);
+			}
 			probability = probability * 10000;
 
 			if (rand() % 10000 <= probability)
@@ -172,11 +182,25 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 
 			// sum together alpha, beta, gamma => potential
 			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
+			if (PRECISION > 0)
+			{
+				if (u[c][t] > 8)
+					u[c][t] = 8;
+				if (u[c][t] < -8)
+					u[c][t] = -8;
+				double ustep = Utils::GetStepSize(pair<double, double>(-8, 8));
+				u[c][t] = ustep * round(u[c][t] / ustep);
+			}
 
 			if(label == -1)
 			{
 				//compute spiking
-				probability = g(u[c][t]);
+				probability = a_g(u[c][t]);
+				if (PRECISION > 0) 
+				{
+					double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
+					probability = agstep * round(probability / agstep);
+				}
 				probability = probability * 10000;
 
 				if (rand() % 10000 <= probability)
