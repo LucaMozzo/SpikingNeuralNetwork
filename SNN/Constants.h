@@ -48,7 +48,13 @@ Approximated sigmoid function
 */
 static const double a_g(const double x)
 {
-	double decimal = abs(x - static_cast<int>(x));
-	double val = (0.5 + decimal / 4.)/pow(2, abs(x));
-	return x >= 0 ? val : 1 - val;
+	if (x < -8)
+		return 0;
+	if (x > 8)
+		return 1;
+	if (x <= 0) {
+		return (0.5 + 0.25*(x + (fabs(ceil(x))))) / (pow(2, (fabs(ceil(x)))));
+	}
+	else if (x > 0)
+		return 1 - ((0.5 + 0.25*(-x + (fabs(ceil(-x))))) / (pow(2, (fabs(ceil(-x))))));
 }
