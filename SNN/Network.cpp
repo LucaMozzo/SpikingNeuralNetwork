@@ -133,7 +133,7 @@ void Network::ExportFile()
 	std::ofstream wweights;
 	std::ofstream vweights;
 	std::ofstream gweights;
-	wweights.open("wweights_out.txt");
+	wweights.open("wweights.txt");
 	for (short i = 0; i < TYI; ++i)
 	{
 		for(int index = 0; index < NEURONS_IN*CLASSES; ++index)
@@ -143,7 +143,7 @@ void Network::ExportFile()
 	wweights.flush();
 	wweights.close();
 
-	vweights.open("vweights_out.txt");
+	vweights.open("vweights.txt");
 	for (short i = 0; i < TYO; ++i)
 	{
 		for (int index = 0; index < CLASSES; ++index)
@@ -153,7 +153,7 @@ void Network::ExportFile()
 	vweights.flush();
 	vweights.close();
 
-	gweights.open("gweights_out.txt");
+	gweights.open("gweights.txt");
 	for (int index = 0; index < CLASSES; ++index)
 		gweights << outputLayer.gammas[index] << "\n";
 	gweights.flush();
