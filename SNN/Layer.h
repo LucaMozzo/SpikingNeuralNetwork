@@ -76,9 +76,10 @@ public:
 
 	/**
 	Returns the "Winner" of the network: uses rate decoding to determine the class with the most spikes
+	@param dropTies Ignore the case in which two neurons have the first spike at the same time
 	@return The prediction of the network
 	*/
-	char ComputeWinner() const;
+	char ComputeWinner(bool dropTies = false) const;
 
 	array<double, T> FTSProbability(char label);
 

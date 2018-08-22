@@ -133,15 +133,26 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 
 }
 
-char OutputLayer::ComputeWinner() const
+char OutputLayer::ComputeWinner(bool dropTies) const
 {
+	char tmp;
+	bool isSet = false;
 	for (short t = 0; t < T; ++t) 
 	{
 		for (short i = 0; i < CLASSES; ++i)
-			if (y[i][t] == 1)
-				return i;
+		{
+			if (y[i][t] == 1 && !isSet)
+			{
+				tmp = i;
+				isSet = true;
+			}
+			else if (y[i][t] == 1 && isSet && dropTies)
+				return -1; //tie
+		}
+		if(isSet)
+			return tmp; //spiking with no tie
 	}
-	return 0; //no spike
+	return -1; //no spike
 }
 
 array<double, T> OutputLayer::FTSProbability(char label)
