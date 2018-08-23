@@ -76,6 +76,7 @@ public:
 	/**
 	Computes the errors at every time t for the given class
 	@params label The class for which compute the errors
+	@param dropTies Ignore the case in which two neurons have the first spike at the same time
 	@returns An array of errors for every class label
 	*/
 	array<array<double, T>, CLASSES> ComputeErrors(unsigned char label) const;
@@ -83,7 +84,7 @@ public:
 	Returns the "Winner" of the network: uses rate decoding to determine the class with the most spikes
 	@return The prediction of the network
 	*/
-	char ComputeWinner() const;
+	char ComputeWinner(bool dropTies = false) const;
 	/**
 	Updates the weights v using the errors
 	@params errors The errors for updating the weights

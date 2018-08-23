@@ -16,7 +16,7 @@ Network::Network()
 	outputLayer = OutputLayer();
 }
 
-char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
+char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label, bool dropTies)
 {
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
@@ -36,7 +36,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 	outputLayer.ComputeOutput(preProcessedTrains, label);
 
 	// 4. Determine the winner based on y
-	return outputLayer.ComputeWinner();
+	return outputLayer.ComputeWinner(dropTies);
 }
 
 void Network::ImportData(string fileName)
@@ -128,18 +128,21 @@ void Network::ExportFile()
 	gweights.close();
 }
 
-int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
+int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet, bool dropTies)
 {
 	int correct = 0;
+	int total = trainingSet.size();
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
-		const auto res = Run(trainingSet[i].first);
+		const auto res = Run(trainingSet[i].first, -1, dropTies);
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
+		else if (dropTies && static_cast<int>(res) == -1)
+			--total; //tie
 	}
 
-	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");
+	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(total) + " images predicted correctly (" + std::to_string(correct / (float)total * 100) + "%)");
 
 	return correct;
 }

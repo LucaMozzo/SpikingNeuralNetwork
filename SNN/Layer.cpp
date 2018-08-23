@@ -203,26 +203,28 @@ array<array<double, T>, CLASSES> OutputLayer::ComputeErrors(unsigned char label)
 	return diffs;
 }
 
-char OutputLayer::ComputeWinner() const
+char OutputLayer::ComputeWinner(bool dropTies) const
 {
-	char bestIndex = 0;
-	char bestSpikes = 0;
-
-	for (short i = 0; i < CLASSES; ++i) 
+	char tmp;
+	bool isSet = false;
+	for (short t = 0; t < T; ++t)
 	{
-		char currentSpikes = 0;
-		for (short t = 0; t < T; ++t)
-			currentSpikes += y[i][t];
-
-		if (currentSpikes > bestSpikes) 
+		for (short i = 0; i < CLASSES; ++i)
 		{
-			bestSpikes = currentSpikes;
-			bestIndex = i;
+			if (y[i][t] == 1 && !isSet)
+			{
+				tmp = i;
+				isSet = true;
+			}
+			else if (y[i][t] == 1 && isSet && dropTies)
+				return -1; //tie
 		}
+		if (isSet)
+			return tmp; //spiking with no tie
 	}
-
-	return bestIndex;
+	return -1; //no spike
 }
+
 
 void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 {

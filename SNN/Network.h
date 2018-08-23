@@ -28,9 +28,10 @@ public:
 	/**
 	Run the network on an image and return the predicted class
 	@param image The input image to be classified
+	@param dropTies Ignore the case in which two neurons have the first spike at the same time
 	@return The predicted class of the image
 	*/
-	char Run(array<unsigned char, NEURONS_IN> image, signed char label = -1);
+	char Run(array<unsigned char, NEURONS_IN> image, signed char label = -1, bool dropTies = false);
 	/**
 	Trains the network
 	@param FILTER_SIZE The number of elements in the filter
@@ -67,16 +68,18 @@ public:
 	@param testSet If true the test set is used, otherwise the training set
 	@param filter The filter to limit the labels in the training - if nullptr, all 10 digits are considered
 	@param maxImagesPerLabel The maximum of images for each digit
+	@param dropTies Ignore the case in which two neurons have the first spike at the same time
 	@return The number of correct classifications
 	*/
 	template <std::size_t FILTER_SIZE>
-	int Validate(int testImages = 10000, bool testSet = true, array<unsigned char, FILTER_SIZE>* filter = NULL, int maxImagesPerLabel = 0);
+	int Validate(int testImages = 10000, bool testSet = true, array<unsigned char, FILTER_SIZE>* filter = NULL, int maxImagesPerLabel = 0, bool dropTies = false);
 	/**
 	Validates the network on the given images
 	@param trainingSet The images that should be used to validate the network on
+	@param dropTies Ignore the case in which two neurons have the first spike at the same time
 	@return The number of correct classifications
 	*/
-	int ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet);
+	int ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet, bool dropTies = false);
 	/**
 	Performs 10-folds cross-validation on the entire training set - single epoch
 	@returns The average of correct classification - Max 6000
@@ -125,7 +128,7 @@ void Network::Train(short epochs, int trainingImages,
 }
 
 template <std::size_t FILTER_SIZE>
-int Network::Validate(int testImages, bool testSet, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel)
+int Network::Validate(int testImages, bool testSet, array<unsigned char, FILTER_SIZE>* filter, int maxImagesPerLabel, bool dropTies)
 {
 	vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> d;
 	if (testSet)
@@ -135,5 +138,5 @@ int Network::Validate(int testImages, bool testSet, array<unsigned char, FILTER_
 		d = Utils::GetTrainingData(testImages, filter, maxImagesPerLabel);
 	}
 
-	return ValidateDataset(d);
+	return ValidateDataset(d, dropTies);
 }
