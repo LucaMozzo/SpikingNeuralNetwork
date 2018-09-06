@@ -26,6 +26,7 @@ const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities 
 const array<char, T> CORRECT_PATTERN = {0, 1, 0, 1}; /**< Pattern used to train the network (y)*/
 const BasisFunctions BASIS_FUNCTION = BINARY;
 const char PRECISION = 0; /**< Precision bits for quantization. 0 = disabled*/
+const char LFSR_SEQ_LENGTH = 10; /**< Size of the LFSR sequence*/
 const string TRAIN_IMAGES_PATH = "D:\\train-images.idx3-ubyte"; /**< Training images database path*/
 const string TRAIN_LABELS_PATH = "D:\\train-labels.idx1-ubyte"; /**< Training labels database path*/
 const string TEST_IMAGES_PATH = "D:\\t10k-images.idx3-ubyte"; /**< Test images database path*/

@@ -118,6 +118,21 @@ public:
 	@param stepSize The size of 1 step
 	*/
 	static void QuantizeVector(array<double, CLASSES>& bias, double stepSize);
+	/**
+	LFSR for random number generator
+	@param seed The initial LFSR values
+	@param tap The value that affects the next bit position
+	@returns The resulting sequence
+	*/
+	static vector<array<bool, LFSR_SEQ_LENGTH>> LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, 2> tap);
+	/**
+	Convert an array of boolean to the decimal representation
+	@param binary The array of booleans
+	@param offset The offset i.e. the positions to skip in the array
+	@return The decimal representation
+	*/
+	template<std::size_t SIZE>
+	static float BinaryToDec(array<bool, SIZE>& binary, char offset = 0);
 };
 
 template <std::size_t FILTER_SIZE>
@@ -235,4 +250,15 @@ inline void Utils::QuantizeMatrix(array<array<double, COLS>, ROWS>& weights, dou
 	for (short r = 0; r < ROWS; ++r)
 		for (short c = 0; c < COLS; ++c)
 			weights[r][c] = stepSize * round(weights[r][c] / stepSize);
+}
+
+template<std::size_t SIZE>
+inline float Utils::BinaryToDec(array<bool, SIZE>& binary, char offset)
+{
+	char arrayIndex = offset;
+	float dec = 0;
+	for (int i = 1; i < SIZE - offset; ++i)
+		dec = dec + binary[arrayIndex++] * pow(2, -1 * (i));
+
+	return dec;
 }

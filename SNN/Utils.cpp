@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
+#include "MatrixOps.h"
 
 # define M_PI 3.14159265358979323846L
 
@@ -144,4 +145,21 @@ void Utils::QuantizeVector(array<double, CLASSES>& bias, double stepSize)
 {
 	for (short r = 0; r < CLASSES; ++r)
 		bias[r] = stepSize * round(bias[r] / stepSize);
+}
+
+vector<array<bool, LFSR_SEQ_LENGTH>> Utils::LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, 2> tap)
+{
+	int n = pow(2, LFSR_SEQ_LENGTH) - 1;
+	vector<array<bool, LFSR_SEQ_LENGTH>> c (n);
+	c[0] = seed;
+
+	for(int k = 0; k < n - 1; ++k)
+	{
+		const bool xor = seed[tap[0]] ^ seed[tap[1]];
+		MatrixOps::ShiftRight(seed);
+		seed[0] = xor;
+		c[k + 1] = seed;
+	}
+
+	return c;
 }

@@ -69,6 +69,12 @@ public:
 	*/
 	template<std::size_t SIZE>
 	static array<double, SIZE> SumArrays(array<double, SIZE> a, array<double, SIZE> b);
+	/**
+	Shifts all the values to the right, leaving the first unchanged
+	@param input The input array
+	*/
+	template<class T, std::size_t SIZE>
+	static void ShiftRight(array<T, SIZE>& input);
 };
 // implementation of the template methods 
 template<std::size_t SIZE>
@@ -134,4 +140,16 @@ inline array<double, SIZE> MatrixOps::SumArrays(array<double, SIZE> a, array<dou
 		res[i] = a[i] + b[i];
 
 	return res;
+}
+
+template<class T, std::size_t SIZE>
+inline void MatrixOps::ShiftRight(array<T, SIZE>& input)
+{
+	T previous = input[0];
+	for(int i = 1; i < input.size(); ++i)
+	{
+		T current = input[i];
+		input[i] = previous;
+		previous = current;
+	}
 }
