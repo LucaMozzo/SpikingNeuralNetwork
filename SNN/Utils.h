@@ -124,7 +124,7 @@ public:
 	@param tap The value that affects the next bit position
 	@returns The resulting sequence
 	*/
-	static vector<array<bool, LFSR_SEQ_LENGTH>> LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, 2> tap);
+	static vector<array<bool, LFSR_SEQ_LENGTH>> LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, TAP_LENGTH> tap);
 	/**
 	Convert an array of boolean to the decimal representation
 	@param binary The array of booleans

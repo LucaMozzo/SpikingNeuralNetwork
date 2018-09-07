@@ -147,7 +147,7 @@ void Utils::QuantizeVector(array<double, CLASSES>& bias, double stepSize)
 		bias[r] = stepSize * round(bias[r] / stepSize);
 }
 
-vector<array<bool, LFSR_SEQ_LENGTH>> Utils::LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, 2> tap)
+vector<array<bool, LFSR_SEQ_LENGTH>> Utils::LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, TAP_LENGTH> tap)
 {
 	int n = pow(2, LFSR_SEQ_LENGTH) - 1;
 	vector<array<bool, LFSR_SEQ_LENGTH>> c (n);

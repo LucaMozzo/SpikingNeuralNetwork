@@ -2,6 +2,7 @@
 #include "Layer.h"
 #include "Utils.h"
 #include "Constants.h"
+#include "Random.h"
 
 InputLayer::InputLayer()
 {
@@ -152,7 +153,9 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			}
 			probability = probability * 10000;
 
-			if (rand() % 10000 <= probability)
+			double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+
+			if (random <= probability)
 				y[c][0] = 1;
 			else
 				y[c][0] = 0;
@@ -204,7 +207,9 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				}
 				probability = probability * 10000;
 
-				if (rand() % 10000 <= probability)
+				const double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+
+				if (random <= probability)
 					y[c][t] = 1;
 				else
 					y[c][t] = 0;
