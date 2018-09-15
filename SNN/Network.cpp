@@ -34,6 +34,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
 	outputLayer.ComputeOutput(preProcessedTrains, label);
+	outputLayer.ComputeZ();
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();

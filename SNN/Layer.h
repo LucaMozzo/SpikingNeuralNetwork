@@ -59,6 +59,7 @@ public:
 
 	array<array<double, TYO>, CLASSES> v; /**< The weights of the feedback kernel*/
 	array<double, CLASSES> gammas; /**< The biases of every class*/
+	array<double, CLASSES> z; /**< Fraction of spikes over total time */
 
 	/**
 	The cosntructor initialises the values of the weights and the basis matrix
@@ -96,4 +97,8 @@ public:
 	@see ComputeErrors
 	*/
 	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
+	/**
+	Compute the fraction of generated spikes
+	*/
+	void ComputeZ();
 };

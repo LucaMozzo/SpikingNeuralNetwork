@@ -9,7 +9,7 @@ void Random::InitLFSR()
 {
 	index = 0;
 
-	const array<bool, LFSR_SEQ_LENGTH> seed = { 1, 0, 1, 1, 0, 1, 0, 1, 1, 0 };
+	const array<bool, LFSR_SEQ_LENGTH> seed = {};// { 1, 0, 1, 1, 0, 1, 0, 1, 1, 0 };
 	const array<int, TAP_LENGTH> tap = { 9, 2 };
 
 	sequence = Utils::LFSR(seed, tap);

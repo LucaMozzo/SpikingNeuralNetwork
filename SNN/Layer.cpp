@@ -92,6 +92,7 @@ OutputLayer::OutputLayer()
 	v = array<array<double, TYO>, CLASSES>();
 	u = array<array<double, T>, CLASSES>();
 	y = array<array<bool, T>, CLASSES>();
+	z = array<double, CLASSES>();
 	gammas = array<double, CLASSES>();
 
 	//srand(time(NULL));
@@ -113,6 +114,7 @@ void OutputLayer::Reset()
 {
 	u = array<array<double, T>, CLASSES>();
 	y = array<array<bool, T>, CLASSES>();
+	z = array<double, CLASSES>();
 }
 
 void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label)
@@ -121,6 +123,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 	{
 		u[c] = array<double, T>();
 		y[c] = array<bool, T>();
+		z[c] = array<double, T>();
 
 		/*
 		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
@@ -185,6 +188,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 
 			// sum together alpha, beta, gamma => potential
 			u[c][t] = MatrixOps::template Sum<TYO>(beta) + gammas[c] + alphas[t-1];
+
 			if (PRECISION > 0)
 			{
 				if (u[c][t] > 8)
@@ -195,8 +199,10 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				u[c][t] = ustep * round(u[c][t] / ustep);
 			}
 
-			if(label == -1)
-			{
+			//TODO check correctness of removing this if
+			//inference only
+			//if(label == -1)
+			//{
 				//compute spiking
 				probability = PRECISION > 0? a_g(u[c][t]) : g(u[c][t]);
 				if (PRECISION > 0) 
@@ -213,7 +219,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 					y[c][t] = 1;
 				else
 					y[c][t] = 0;
-			}
+			//}
 		}
 	}
 }
@@ -298,5 +304,17 @@ void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
 	{
 		auto sum = MatrixOps::Sum(errors[c]);
 		gammas[c] += LEARNING_RATE * sum;
+	}
+}
+
+void OutputLayer::ComputeZ()
+{
+	for (short c = 0; c < CLASSES; ++c)
+	{
+		short spikes = 0;
+		for (short t = 0; t < T; ++t)
+			if (y[c][t])
+				++spikes;
+		z[c] = spikes / static_cast<double>(T);
 	}
 }
