@@ -16,7 +16,7 @@ Network::Network()
 	outputLayer = OutputLayer();
 }
 
-char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
+char Network::Run(array<unsigned char, NEURONS_IN> image)
 {
 	// 1. Clear the trains in the output layer
 	inputLayer.ResetTrains();
@@ -33,8 +33,7 @@ char Network::Run(array<unsigned char, NEURONS_IN> image, signed char label)
 
 	// 3. Compute Alphas and pass the result to the computation of the output
 	auto preProcessedTrains = inputLayer.ApplyAlphas();
-	outputLayer.ComputeOutput(preProcessedTrains, label);
-	outputLayer.ComputeZ();
+	outputLayer.ComputeOutput(preProcessedTrains);
 
 	// 4. Determine the winner based on y
 	return outputLayer.ComputeWinner();

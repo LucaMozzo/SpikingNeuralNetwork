@@ -23,7 +23,6 @@ const short TYO = 4; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/
 const float LEARNING_RATE =  0.001; /**< Learning rate*/
 const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities for spike decoding*/
-const array<char, T> CORRECT_PATTERN = {0, 1, 0, 1}; /**< Pattern used to train the network (y)*/
 const BasisFunctions BASIS_FUNCTION = BINARY;
 const char PRECISION = 0; /**< Precision bits for quantization. 0 = disabled*/
 const char LFSR_SEQ_LENGTH = 0; /**< Size of the LFSR seed sequence. 0 = use system random generator */
@@ -32,8 +31,6 @@ const string TRAIN_IMAGES_PATH = "D:\\train-images.idx3-ubyte"; /**< Training im
 const string TRAIN_LABELS_PATH = "D:\\train-labels.idx1-ubyte"; /**< Training labels database path*/
 const string TEST_IMAGES_PATH = "D:\\t10k-images.idx3-ubyte"; /**< Test images database path*/
 const string TEST_LABELS_PATH = "D:\\t10k-labels.idx1-ubyte"; /**< Test labels database path*/
-const float TAU_C = 0.5;
-const float TAU_N = 0.5;
 
 /**
 Sigmoid function used for activation

@@ -19,7 +19,7 @@ public:
 	array<array<double, TYI>, CLASSES*NEURONS_IN> w; /**< The weights w for every synapse*/
 
 	/**
-	The cosntructor initialises the values of the weights and the basis matrix
+	The constructor initialises the values of the weights and the basis matrix
 	*/
 	InputLayer();
 	/**
@@ -40,8 +40,10 @@ public:
 	/**
 	Updates the weights w using the errors
 	@params errors The errors for updating the weights
+	@params z_c The fraction of spikes over the total time for the correct label
+	@params max_z_j The max fraction of spikes over T for all the other labels
 	*/
-	void UpdateAlphas(array<array<double, T>, CLASSES>& errors);
+	void UpdateAlphas(array<array<double, T>, CLASSES>& errors, double z_c, double max_z_j);
 };
 
 /**
@@ -62,7 +64,7 @@ public:
 	array<double, CLASSES> z; /**< Fraction of spikes over total time */
 
 	/**
-	The cosntructor initialises the values of the weights and the basis matrix
+	The constructor initialises the values of the weights and the basis matrix
 	*/
 	OutputLayer();
 	/**
@@ -73,7 +75,7 @@ public:
 	Computes the potential and output starting from the preprocessed trains
 	@param synapsesOut The preprocessed spike trains from the input layer
 	*/
-	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label = -1);
+	void ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut);
 	/**
 	Computes the errors at every time t for the given class
 	@params label The class for which compute the errors
@@ -90,15 +92,16 @@ public:
 	@params errors The errors for updating the weights
 	@see ComputeErrors
 	*/
-	void UpdateBetas(array<array<double, T>, CLASSES>& errors);
+	void UpdateBetas(array<array<double, T>, CLASSES>& errors, double max_z_j);
 	/**
 	Updates the biases using the errors
 	@params errors The errors for updating the biases
 	@see ComputeErrors
 	*/
-	void UpdateGammas(array<array<double, T>, CLASSES>& errors);
+	void UpdateGammas(array<array<double, T>, CLASSES>& errors, double max_z_j);
 	/**
-	Compute the fraction of generated spikes
+	Compute the max z among all the labels j such that j=/=c
+	@returns The maximum z
 	*/
-	void ComputeZ();
+	double ComputeMaxZj() const;
 };

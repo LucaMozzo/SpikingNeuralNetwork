@@ -45,7 +45,7 @@ array<array<double, T-1>, CLASSES*NEURONS_IN> InputLayer::ApplyAlphas()
 	return result;
 }
 
-void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
+void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors, double z_c, double max_z_j)
 {
 	short j = 0; //index for the train
 	for (short c = 0; c < CLASSES*NEURONS_IN; ++c)
@@ -76,7 +76,7 @@ void InputLayer::UpdateAlphas(array<array<double, T>, CLASSES>& errors)
 			err = MatrixOps::SumArrays(err, tmp);
 		}
 
-		MatrixOps::Multiply(LEARNING_RATE, err);
+		MatrixOps::Multiply(LEARNING_RATE * (PRECISION > 0 ? a_g(z_c - max_z_j) : g(z_c - max_z_j)), err);
 
 		
 		//apply it to every member of alpha
@@ -117,13 +117,13 @@ void OutputLayer::Reset()
 	z = array<double, CLASSES>();
 }
 
-void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut, signed char label)
+void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& synapsesOut)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
 		u[c] = array<double, T>();
 		y[c] = array<bool, T>();
-		z[c] = array<double, T>();
+		z[c] = 0;
 
 		/*
 		top N elements in the output of the synapses => input neuron to class 1,2,3,..,N
@@ -143,36 +143,26 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			double ustep = Utils::GetStepSize(pair<double, double>(-8, 8));
 			u[c][0] = ustep * round(u[c][0] / ustep);
 		}
-		double probability;
+		int spikes = 0;
 
-		if(label == -1)
+		//prediction, compute spiking
+		double probability = PRECISION > 0 ? a_g(u[c][0]) : g(u[c][0]);
+		if (PRECISION > 0)
 		{
-			//prediction, compute spiking
-			probability = PRECISION > 0 ? a_g(u[c][0]) : g(u[c][0]);
-			if (PRECISION > 0)
-			{
-				double agstep = (1 / pow(2, PRECISION));
-				probability = agstep * round(probability / agstep);
-			}
-			probability = probability * 10000;
+			double agstep = (1 / pow(2, PRECISION));
+			probability = agstep * round(probability / agstep);
+		}
+		probability = probability * 10000;
 
-			double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+		double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
 
-			if (random <= probability)
-				y[c][0] = 1;
-			else
-				y[c][0] = 0;
+		if (random <= probability) 
+		{
+			y[c][0] = 1;
+			++spikes;
 		}
 		else
-		{
-			//training, preset y
-			for(char i = 0; i < CLASSES; ++i)
-				for(int j = 0; j < T; ++j)
-					if(i == label)
-						y[i][j] = CORRECT_PATTERN[j];
-					else
-						y[i][j] = 0;
-		}
+			y[c][0] = 0;
 
 		for (short t = 1; t < T; ++t)
 		{
@@ -199,28 +189,29 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				u[c][t] = ustep * round(u[c][t] / ustep);
 			}
 
-			//TODO check correctness of removing this if
-			//inference only
-			//if(label == -1)
-			//{
-				//compute spiking
-				probability = PRECISION > 0? a_g(u[c][t]) : g(u[c][t]);
-				if (PRECISION > 0) 
-				{
-					//double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
-					double agstep = (1 / pow(2, PRECISION));
-					probability = agstep * round(probability / agstep);
-				}
-				probability = probability * 10000;
 
-				const double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+			//compute spiking
+			probability = PRECISION > 0? a_g(u[c][t]) : g(u[c][t]);
+			if (PRECISION > 0) 
+			{
+				//double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
+				double agstep = (1 / pow(2, PRECISION));
+				probability = agstep * round(probability / agstep);
+			}
+			probability = probability * 10000;
 
-				if (random <= probability)
-					y[c][t] = 1;
-				else
-					y[c][t] = 0;
-			//}
+			const double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+
+			if (random <= probability)
+			{
+				y[c][0] = 1;
+				++spikes;
+			}
+			else
+				y[c][t] = 0;
+		
 		}
+		z[c] = spikes / static_cast<double>(T);
 	}
 }
 
@@ -232,7 +223,7 @@ array<array<double, T>, CLASSES> OutputLayer::ComputeErrors(unsigned char label)
 		array<double, T> diff = array<double, T>();
 		for (short t = 0; t < T; ++t)
 		{
-			diff[t] = (label == c ? CORRECT_PATTERN[t] : 0) - g(u[c][t]);
+			diff[t] = y[c][t] - g(u[c][t]);
 		}
 		diffs[c] = diff;
 	}
@@ -260,7 +251,7 @@ char OutputLayer::ComputeWinner() const
 	return bestIndex;
 }
 
-void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
+void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors, double max_z_j)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
@@ -287,7 +278,7 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 			err = MatrixOps::SumArrays(err, tmp);
 		}
 
-		MatrixOps::Multiply(LEARNING_RATE, err);
+		MatrixOps::Multiply(LEARNING_RATE * (PRECISION > 0 ? a_g(z[c] - max_z_j) : g(z[c] - max_z_j)), err);
 
 
 		//apply it
@@ -298,23 +289,19 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 	}
 }
 
-void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors)
+void OutputLayer::UpdateGammas(array<array<double, T>, CLASSES>& errors, double max_z_j)
 {
 	for (short c = 0; c < CLASSES; ++c)
 	{
 		auto sum = MatrixOps::Sum(errors[c]);
-		gammas[c] += LEARNING_RATE * sum;
+		gammas[c] += LEARNING_RATE * sum * (PRECISION > 0 ? a_g(z[c] - max_z_j) : g(z[c] - max_z_j));
 	}
 }
 
-void OutputLayer::ComputeZ()
+double OutputLayer::ComputeMaxZj() const
 {
-	for (short c = 0; c < CLASSES; ++c)
-	{
-		short spikes = 0;
-		for (short t = 0; t < T; ++t)
-			if (y[c][t])
-				++spikes;
-		z[c] = spikes / static_cast<double>(T);
-	}
+	double currentMax = 0;
+	for (short i = 0; i < CLASSES; ++i)
+		currentMax = z[i] > currentMax ? z[i] : currentMax;
+	return currentMax;
 }

@@ -30,7 +30,7 @@ public:
 	@param image The input image to be classified
 	@return The predicted class of the image
 	*/
-	char Run(array<unsigned char, NEURONS_IN> image, signed char label = -1);
+	char Run(array<unsigned char, NEURONS_IN> image);
 	/**
 	Trains the network
 	@param FILTER_SIZE The number of elements in the filter
@@ -98,12 +98,16 @@ void Network::Train(short epochs, int trainingImages,
 
 			for (int i = 0; i < data.size(); ++i)
 			{
-				Run(data[i].first, data[i].second);
-				auto errors = outputLayer.ComputeErrors(data[i].second);
-				inputLayer.UpdateAlphas(errors);
+				auto result = Run(data[i].first);
+				if (result == data[i].second)
+				{
+					auto errors = outputLayer.ComputeErrors(data[i].second);
+					auto max_z_j = outputLayer.ComputeMaxZj();
 
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
+					inputLayer.UpdateAlphas(errors, outputLayer.z[data[i].second], max_z_j);
+					outputLayer.UpdateBetas(errors, max_z_j);
+					outputLayer.UpdateGammas(errors, max_z_j);
+				}
 			}
 		}
 	else
@@ -113,12 +117,16 @@ void Network::Train(short epochs, int trainingImages,
 			Utils::PrintLine("Epoch " + std::to_string(epoch) + " (" + std::to_string(trainingData->size()) + " images)");
 			for (auto& img : *trainingData)
 			{
-				Run(img.first, img.second);
-				auto errors = outputLayer.ComputeErrors(img.second);
-				inputLayer.UpdateAlphas(errors);
+				auto result = Run(img.first);
+				if (result == img.second)
+				{
+					auto errors = outputLayer.ComputeErrors(img.second);
+					const auto max_z_y = outputLayer.ComputeMaxZj();
 
-				outputLayer.UpdateBetas(errors);
-				outputLayer.UpdateGammas(errors);
+					inputLayer.UpdateAlphas(errors, outputLayer.z[img.second], max_z_y);
+					outputLayer.UpdateBetas(errors, max_z_y);
+					outputLayer.UpdateGammas(errors, max_z_y);
+				}
 			}
 		}
 	}
