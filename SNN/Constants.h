@@ -20,7 +20,7 @@ const short TYI = 8; /**< Length of short-term memory window in presynaptic phas
 const short Ka = TYI; /**< Number of alpha bases*/
 const short TYO = 8; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/
-const float LEARNING_RATE = 0.001; /**< Learning rate*/
+const float LEARNING_RATE = 0.01; /**< Learning rate*/
 const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities for spike decoding*/
 const BasisFunctions BASIS_FUNCTION = BINARY;
 const char PRECISION = 8; /**< Precision bits for quantization. 0 = disabled*/
