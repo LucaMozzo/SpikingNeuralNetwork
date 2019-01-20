@@ -2,6 +2,7 @@
 #include "Layer.h"
 #include "Utils.h"
 #include <cmath>
+#include "Random.h"
 
 InputLayer::InputLayer()
 {
@@ -100,11 +101,25 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 		auto alphas = MatrixOps::SumColumns(synapsesOut, c);
 
 		u[c][0] = gammas[c]; //the first potential will always be just the bias
-							 //compute spiking
-		double probability = g(u[c][0]);
+		if (PRECISION > 0)
+		{
+			double ustep = Utils::GetStepSize(pair<double, double>(-8, 8));
+			u[c][0] = ustep * round(u[c][0] / ustep);
+		}
+
+		double probability;
+		//prediction, compute spiking
+		probability = PRECISION > 0 ? a_g(u[c][0]) : g(u[c][0]);
+		if (PRECISION > 0)
+		{
+			double agstep = (1 / pow(2, PRECISION));
+			probability = agstep * round(probability / agstep);
+		}
 		probability = probability * 10000;
 
-		if (rand() % 10000 <= probability)
+		double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+
+		if (random <= probability)
 			y[c][0] = 1;
 		else
 			y[c][0] = 0;
@@ -114,11 +129,29 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			// sum together alpha, beta, gamma => potential
 			u[c][t] = gammas[c] + alphas[t - 1];
 
+			if (PRECISION > 0)
+			{
+				if (u[c][t] > 8)
+					u[c][t] = 8;
+				if (u[c][t] < -8)
+					u[c][t] = -8;
+				double ustep = Utils::GetStepSize(pair<double, double>(-8, 8));
+				u[c][t] = ustep * round(u[c][t] / ustep);
+			}
+
 			//compute spiking
-			probability = g(u[c][t]);
+			probability = PRECISION > 0 ? a_g(u[c][t]) : g(u[c][t]);
+			if (PRECISION > 0)
+			{
+				//double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
+				double agstep = (1 / pow(2, PRECISION));
+				probability = agstep * round(probability / agstep);
+			}
 			probability = probability * 10000;
 
-			if (rand() % 10000 <= probability)
+			const double random = LFSR_SEQ_LENGTH > 0 ? Random::Generate() * 10000 : rand() % 10000;
+
+			if (random <= probability)
 				y[c][t] = 1;
 			else
 				y[c][t] = 0;

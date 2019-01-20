@@ -86,6 +86,53 @@ public:
 	@param str The string to be printed to terminal
 	*/
 	static void PrintLine(string&& str);
+	/**
+Get the min and max weight in the given matrix
+@param weights The matrix of weights
+@returns The range of the weights
+*/
+	template<std::size_t ROWS, std::size_t COLS>
+	static pair<double, double> GetMatrixRange(array<array<double, COLS>, ROWS>& weights);
+	/**
+	Get the min and max bias in the given array
+	@param weights The matrix of biases
+	@returns The range of the biases
+	*/
+	static pair<double, double> GetVectorRange(array<double, CLASSES>& biases);
+	/**
+	Get the step size for the weights quantization
+	@param range The max and min value of the weights
+	@returns The size of a step
+	*/
+	static double GetStepSize(pair<double, double>& range);
+	/**
+	Compute the quantized weights
+	@param weights The matrix of weights
+	@param stepSize The size of 1 step
+	*/
+	template<std::size_t ROWS, std::size_t COLS>
+	static void QuantizeMatrix(array<array<double, COLS>, ROWS>& weights, double stepSize);
+	/**
+	Compute the quantized biases
+	@param bias The vector of biases
+	@param stepSize The size of 1 step
+	*/
+	static void QuantizeVector(array<double, CLASSES>& bias, double stepSize);
+	/**
+	LFSR for random number generator
+	@param seed The initial LFSR values
+	@param tap The value that affects the next bit position
+	@returns The resulting sequence
+	*/
+	static vector<array<bool, LFSR_SEQ_LENGTH>> LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, TAP_LENGTH> tap);
+	/**
+	Convert an array of boolean to the decimal representation
+	@param binary The array of booleans
+	@param offset The offset i.e. the positions to skip in the array
+	@return The decimal representation
+	*/
+	template<std::size_t SIZE>
+	static float BinaryToDec(array<bool, SIZE>& binary, char offset = 0);
 };
 
 template <std::size_t FILTER_SIZE>
@@ -183,3 +230,34 @@ vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>> Utils::GetTestData
 	return ReadMNIST<FILTER_SIZE>(NumberOfImages, TEST_IMAGES_PATH, TEST_LABELS_PATH, filter, maxImagesPerLabel);
 }
 
+template<std::size_t ROWS, std::size_t COLS>
+inline pair<double, double> Utils::GetMatrixRange(array<array<double, COLS>, ROWS>& weights)
+{
+	pair<double, double> range(INT_MAX, INT_MIN);
+	for (short r = 0; r < ROWS; ++r)
+		for (short c = 0; c < COLS; ++c)
+			if (weights[r][c] < range.first)
+				range.first = weights[r][c];
+			else if (weights[r][c] > range.second)
+				range.second = weights[r][c];
+	return range;
+}
+
+template<std::size_t ROWS, std::size_t COLS>
+inline void Utils::QuantizeMatrix(array<array<double, COLS>, ROWS>& weights, double stepSize)
+{
+	for (short r = 0; r < ROWS; ++r)
+		for (short c = 0; c < COLS; ++c)
+			weights[r][c] = stepSize * round(weights[r][c] / stepSize);
+}
+
+template<std::size_t SIZE>
+inline float Utils::BinaryToDec(array<bool, SIZE>& binary, char offset)
+{
+	char arrayIndex = offset;
+	float dec = 0;
+	for (int i = 1; i < SIZE - offset; ++i)
+		dec = dec + binary[arrayIndex++] * pow(2, -1 * (i));
+
+	return dec;
+}

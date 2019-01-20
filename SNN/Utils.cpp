@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include <opencv2\opencv.hpp>
 #include <thread>
+#include "MatrixOps.h"
 
 #define M_PI 3.14159265358979323846L
 
@@ -99,3 +100,42 @@ void Utils::PrintLine(string&& str)
 	//lock.unlock();
 }
 
+pair<double, double> Utils::GetVectorRange(array<double, CLASSES>& biases)
+{
+	pair<double, double> range(INT_MAX, INT_MIN);
+	for (short r = 0; r < CLASSES; ++r)
+		if (biases[r] < range.first)
+			range.first = biases[r];
+		else if (biases[r] > range.second)
+			range.second = biases[r];
+	return range;
+}
+
+double Utils::GetStepSize(pair<double, double>& range)
+{
+	//return ((int)(((range.second - range.first) / pow(2, (PRECISION - 1)) * 10000)) / 10000.);
+	return (range.second - range.first) / pow(2, (PRECISION - 1));
+}
+
+void Utils::QuantizeVector(array<double, CLASSES>& bias, double stepSize)
+{
+	for (short r = 0; r < CLASSES; ++r)
+		bias[r] = stepSize * round(bias[r] / stepSize);
+}
+
+vector<array<bool, LFSR_SEQ_LENGTH>> Utils::LFSR(array<bool, LFSR_SEQ_LENGTH> seed, const array<int, TAP_LENGTH> tap)
+{
+	int n = pow(2, LFSR_SEQ_LENGTH) - 1;
+	vector<array<bool, LFSR_SEQ_LENGTH>> c(n);
+	c[0] = seed;
+
+	for (int k = 0; k < n - 1; ++k)
+	{
+		const bool xor = seed[tap[0]] ^ seed[tap[1]];
+		MatrixOps::ShiftRight(seed);
+		seed[0] = xor;
+		c[k + 1] = seed;
+	}
+
+	return c;
+}
