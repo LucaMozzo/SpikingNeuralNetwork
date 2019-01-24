@@ -138,7 +138,7 @@ pair<double, double> Utils::GetVectorRange(array<double, CLASSES>& biases)
 double Utils::GetStepSize(pair<double, double>& range)
 {
 	//return ((int)(((range.second - range.first) / pow(2, (PRECISION - 1)) * 10000)) / 10000.);
-	return (range.second - range.first) / pow(2, (PRECISION - 1));
+	return (range.second - range.first) / (pow(2, PRECISION) - 1);
 }
 
 void Utils::QuantizeVector(array<double, CLASSES>& bias, double stepSize)
