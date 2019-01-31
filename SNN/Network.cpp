@@ -133,7 +133,7 @@ void Network::ExportFile()
 	std::ofstream wweights;
 	std::ofstream vweights;
 	std::ofstream gweights;
-	wweights.open("wweights.txt");
+	wweights.open(BASE_NAME + "_wweights.txt");
 	for (short i = 0; i < TYI; ++i)
 	{
 		for(int index = 0; index < NEURONS_IN*CLASSES; ++index)
@@ -143,7 +143,7 @@ void Network::ExportFile()
 	wweights.flush();
 	wweights.close();
 
-	vweights.open("vweights.txt");
+	vweights.open(BASE_NAME + "_vweights.txt");
 	for (short i = 0; i < TYO; ++i)
 	{
 		for (int index = 0; index < CLASSES; ++index)
@@ -153,7 +153,7 @@ void Network::ExportFile()
 	vweights.flush();
 	vweights.close();
 
-	gweights.open("gweights.txt");
+	gweights.open(BASE_NAME + "_gweights.txt");
 	for (int index = 0; index < CLASSES; ++index)
 		gweights << outputLayer.gammas[index] << "\n";
 	gweights.flush();
@@ -233,7 +233,7 @@ int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool
 	if(collectData)
 	{
 		std::fstream outFile;
-		outFile.open("results.csv");
+		outFile.open(BASE_NAME + "_results.csv");
 		outFile << "T=" << T << "\n" << "Validation (%),Test (%)\n";
 		for(int e = 0; e < epochs; ++e){
 			Train<0>(1, 0, &trainingSet);

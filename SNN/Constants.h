@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <cmath>
 #include <fstream>
+#include <opencv2/core.hpp>
 
 using std::string;
 using std::array;
@@ -16,6 +17,7 @@ enum BasisFunctions
 const short CLASSES = 10; /**< Number of classes*/
 const short NEURONS_IN = 784; /**< Number of input neurons*/
 
+const string BASE_NAME = "RateDec10kT8_Binary";
 const short T = 4; /**< Length of the spike train*/
 const short TYI = 4; /**< Length of short-term memory window in presynaptic phase*/
 const short Ka = TYI; /**< Number of alpha bases*/
@@ -23,15 +25,15 @@ const short TYO = 4; /**< Length of short-term memory window in feedback phase*/
 const short Kb = TYO; /**< Number of beta bases*/
 const float LEARNING_RATE =  0.001; /**< Learning rate*/
 const std::pair<float, float> P_RANGE = { 0, 0.5 }; /**< Range of probabilities for spike decoding*/
-const array<char, T> CORRECT_PATTERN = {0, 1, 0, 1}; /**< Pattern used to train the network (y)*/
-const BasisFunctions BASIS_FUNCTION = BINARY;
-const char PRECISION = 8; /**< Precision bits for quantization. 0 = disabled*/
-const char LFSR_SEQ_LENGTH = 10; /**< Size of the LFSR seed sequence. 0 = use system random generator */
+const array<char, T> CORRECT_PATTERN = {1, 1, 1, 1 }; /**< Pattern used to train the network (y)*/
+const BasisFunctions BASIS_FUNCTION = RAISED_COSINE;
+const char PRECISION = 0; /**< Precision bits for quantization. 0 = disabled*/
+const char LFSR_SEQ_LENGTH = 0; /**< Size of the LFSR seed sequence. 0 = use system random generator */
 const char TAP_LENGTH = 2; /**< Length of the LFSR tap sequence */
-const string TRAIN_IMAGES_PATH = "D:\\train-images.idx3-ubyte"; /**< Training images database path*/
-const string TRAIN_LABELS_PATH = "D:\\train-labels.idx1-ubyte"; /**< Training labels database path*/
-const string TEST_IMAGES_PATH = "D:\\t10k-images.idx3-ubyte"; /**< Test images database path*/
-const string TEST_LABELS_PATH = "D:\\t10k-labels.idx1-ubyte"; /**< Test labels database path*/
+const string TRAIN_IMAGES_PATH = "train-images.idx3-ubyte"; /**< Training images database path*/
+const string TRAIN_LABELS_PATH = "train-labels.idx1-ubyte"; /**< Training labels database path*/
+const string TEST_IMAGES_PATH = "t10k-images.idx3-ubyte"; /**< Test images database path*/
+const string TEST_LABELS_PATH = "t10k-labels.idx1-ubyte"; /**< Test labels database path*/
 
 /**
 Sigmoid function used for activation

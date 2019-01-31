@@ -202,7 +202,7 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 				if (PRECISION > 0) 
 				{
 					//double agstep = ((int)((1 / pow(2, PRECISION) * 10000)) / 10000.);
-					double agstep = (1 / pow(2, PRECISION));
+					double agstep = (1 / (pow(2, PRECISION) - 1));
 					probability = agstep * round(probability / agstep);
 				}
 				probability = probability * 10000;
