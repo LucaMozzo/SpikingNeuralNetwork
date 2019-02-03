@@ -121,7 +121,7 @@ int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool
 	if (collectData)
 	{
 		std::fstream outFile;
-		outFile.open("results.csv");
+		outFile.open(BASE_NAME + ".csv");
 		outFile << "T=" << T << "\n" << "Validation (%),Test (%)\n";
 		for (int e = 0; e < epochs; ++e) {
 			Train<0>(1, 0, &trainingSet);
@@ -144,3 +144,25 @@ int Network::TrainVal(int epochs, int imagesPerLabel, int validationImages, bool
 		return ValidateDataset(validationSet);
 	}
 }
+
+void Network::ExportFile()
+{
+	std::ofstream wweights;
+	std::ofstream gweights;
+	wweights.open(BASE_NAME + "_wweights.txt");
+	for (short i = 0; i < TYI; ++i)
+	{
+		for (int index = 0; index < NEURONS_IN*CLASSES; ++index)
+			wweights << inputLayer.w[index][i] << " ";
+		wweights << "\n";
+	}
+	wweights.flush();
+	wweights.close();
+
+	gweights.open(BASE_NAME + "_gweights.txt");
+	for (int index = 0; index < CLASSES; ++index)
+		gweights << outputLayer.gammas[index] << "\n";
+	gweights.flush();
+	gweights.close();
+}
+

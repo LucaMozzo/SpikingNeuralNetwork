@@ -74,6 +74,7 @@ public:
 	int CrossValidate();
 
 	int TrainVal(int epochs, int imagesPerLabel, int validationImages, bool collectData = false);
+	void ExportFile();
 };
 
 template <std::size_t FILTER_SIZE>
