@@ -165,7 +165,19 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 	int correct = 0;
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
+#if COUNT_MEMORY_ACCESS
+		memory_accesses = 0;
+#endif
+
 		const auto res = Run(trainingSet[i].first);
+
+#if COUNT_MEMORY_ACCESS
+		if (memory_accesses > 0) 
+		{
+			Utils::PrintLine(std::to_string(memory_accesses) + " memory accesses");
+			memory_accesses = 0;
+		}
+#endif
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;

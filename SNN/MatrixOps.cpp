@@ -12,6 +12,10 @@ array<double, T-1> MatrixOps::Conv(array<bool, T> const & f, array<double, TYI> 
 		int const jmn = (i >= TYI - 1) ? i - (TYI - 1) : 0;
 		int const jmx = (i <  out_size) ? i : out_size;
 		for (auto j(jmn); j <= jmx; ++j) {
+#if COUNT_MEMORY_ACCESS
+			if (f[j] > 0)
+				++memory_accesses;
+#endif
 			out[i] += (f[j] * g[i - j]);
 		}
 	}

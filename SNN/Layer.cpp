@@ -275,6 +275,13 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 				}
 			}
 
+#if COUNT_MEMORY_ACCESS
+			for (auto spike : trainWindow)
+				if (spike == 1) {
+					++memory_accesses;
+				}
+#endif
+
 			auto basisT = MatrixOps::Transpose(basis);
 			auto tmp = MatrixOps::Dot(basisT, trainWindow);
 			MatrixOps::Multiply(errors[c][t], tmp);
