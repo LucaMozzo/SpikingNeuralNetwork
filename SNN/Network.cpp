@@ -162,26 +162,21 @@ void Network::ExportFile()
 
 int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsigned char>>& trainingSet)
 {
+#if COUNT_MEMORY_ACCESS
+	memory_accesses = 0;
+#endif
 	int correct = 0;
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
-#if COUNT_MEMORY_ACCESS
-		memory_accesses = 0;
-#endif
-
 		const auto res = Run(trainingSet[i].first);
-
-#if COUNT_MEMORY_ACCESS
-		if (memory_accesses > 0) 
-		{
-			Utils::PrintLine(std::to_string(memory_accesses) + " memory accesses");
-			memory_accesses = 0;
-		}
-#endif
 
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
 	}
+#if COUNT_MEMORY_ACCESS
+	Utils::PrintLine(std::to_string(memory_accesses / static_cast<float>(trainingSet.size())) + " memory accesses on average (" + std::to_string(trainingSet.size()) + " images)");
+	memory_accesses = 0;
+#endif
 
 	Utils::PrintLine(std::to_string(correct) + "/" + std::to_string(trainingSet.size()) + " images predicted correctly (" + std::to_string(correct/(float)trainingSet.size()*100) + "%)");
 
