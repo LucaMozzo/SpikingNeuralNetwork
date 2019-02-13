@@ -169,7 +169,9 @@ int Network::ValidateDataset(vector<pair<array<unsigned char, NEURONS_IN>, unsig
 	for (int i = 0; i < trainingSet.size(); ++i)
 	{
 		const auto res = Run(trainingSet[i].first);
-
+#if COUNT_MEMORY_ACCESS
+		memory_accesses += 10; //for gamma
+#endif
 		if (static_cast<int>(res) == static_cast<int>(trainingSet[i].second))
 			correct++;
 	}

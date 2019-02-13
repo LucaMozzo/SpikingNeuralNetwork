@@ -177,8 +177,16 @@ void OutputLayer::ComputeOutput(array<array<double, T-1>, CLASSES*NEURONS_IN>& s
 			short yIndex = t - 1; // I start considering the output at time t-tauy'
 			for (short b = 0; b < TYO; ++b)
 			{
-				if (yIndex-- >= 0) //if the window is within the boundaries
-					beta[b] = y[c][yIndex+1] * MatrixOps::Dot(basis, v[c])[b]; //use the formula to multiply beta * y
+				if (yIndex-- >= 0)
+				{ //if the window is within the boundaries
+					beta[b] = y[c][yIndex + 1] * MatrixOps::Dot(basis, v[c])[b]; //use the formula to multiply beta * y
+#if COUNT_MEMORY_ACCESS
+					if (y[c][yIndex+1] == 1) 
+					{
+						++memory_accesses;
+					}
+#endif
+				}
 				else
 					beta[b] = 0; //if the window is out of the boundaries, y is assumed to be 0
 			}
@@ -274,13 +282,6 @@ void OutputLayer::UpdateBetas(array<array<double, T>, CLASSES>& errors)
 					++index;
 				}
 			}
-
-#if COUNT_MEMORY_ACCESS
-			for (auto spike : trainWindow)
-				if (spike == 1) {
-					++memory_accesses;
-				}
-#endif
 
 			auto basisT = MatrixOps::Transpose(basis);
 			auto tmp = MatrixOps::Dot(basisT, trainWindow);
