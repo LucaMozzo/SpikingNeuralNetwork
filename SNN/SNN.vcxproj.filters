@@ -81,4 +81,8 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="LICENSE.md" />
+  </ItemGroup>
 </Project>
